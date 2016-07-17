@@ -4,4 +4,6 @@ Rails.application.routes.draw do
   resources :grandsons
   resources :games
   # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
+
+  get '/', to: 'menu#home'
 end
