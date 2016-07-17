@@ -20,6 +20,19 @@ var buttonCoordinates = [
   [450, 355],
 ]
 
+function loadJSON(callback) {
+  var xobj = new XMLHttpRequest();
+  xobj.overrideMimeType("application/json");
+  xobj.open('GET', '../setup.json', true);
+  xobj.onreadystatechange = function () {
+    if (xobj.readyState == 4 && xobj.status == "200") {
+      // .open will NOT return a value but simply returns undefined in async mode so use a callback
+      callback(xobj.responseText);
+      }
+    }
+  xobj.send(null);
+}
+
 var GFG = {};
 
 GFG.GameState = function(game){};
@@ -40,18 +53,11 @@ GFG.GameState.prototype = {
 
   create: function() {
 
-    this.buttonList = [0,0,0,0,0,0,0];
-    for (var i = 1; i < 4; i++) {
-      var a = true;
-      while(a){
-        var index = this.game.rnd.integerInRange(0, 7);
-        if (this.buttonList[index] == 0){
-          this.buttonList[index] = i;
-          a = false;
-        }
-      }
-    }
+    this.setup = {}
 
+
+
+    this.buttonList = this.setup[0].monitor1.monitorButtons;
 
     this.monitor = new Monitor(this, this.game, 0, 0, this.game.world, this.buttonList, 2);
     this.monitor.generateLayout();

@@ -1,1 +1,56 @@
-{}
+[{
+
+"grandpasHardware": {"monitor": 2,"tower": 1},
+
+"monitor1": {
+  "name": "SCL-50EX",
+  "logo": 2,
+  "monitorButtons": [0,0,1,0,3,0,2,0],
+  "monitorCables": {"power": "blue", "data": "red"},
+  "monitorState": {"input": 1, "facing": 1}
+},
+
+"monitor2": {
+  "name": "SCL-50EX",
+  "logo": 2,
+  "monitorButtons": [0,0,1,0,3,0,2,0],
+  "monitorCables": {"power": "blue", "data": "red"},
+  "monitorState": {"input": 1, "facing": 1}
+},
+
+"monitor3": {
+  "name": "SCL-50EX",
+  "logo": 2,
+  "monitorButtons": [0,0,1,0,3,0,2,0],
+  "monitorCables": {"power": "blue", "data": "red"},
+  "monitorState": {"input": 1, "facing": 1}
+},
+
+"tower1":{
+  "name": "Grinder XT",
+  "logo": 3,
+  "towerPorts": [0,1,2,0],
+  "towerCable": "green",
+  "towerSwitchNumber": 2,
+  "towerState": {"powerOn": "down", "monitorOn": "up"}
+},
+
+"tower2":{
+  "name": "Grinder XT",
+  "logo": 3,
+  "towerPorts": [0,1,2,0],
+  "towerCable": "green",
+  "towerSwitchNumber": 2,
+  "towerState": {"powerOn": "down", "monitorOn": "up"}
+},
+
+"tower3":{
+  "name": "Grinder XT",
+  "logo": 3,
+  "towerPorts": [0,1,2,0],
+  "towerCable": "green",
+  "towerSwitchNumber": 2,
+  "towerState": {"powerOn": "down", "monitorOn": "up"}
+},
+
+}]
