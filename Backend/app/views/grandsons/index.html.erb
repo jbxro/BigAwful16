@@ -1,0 +1,25 @@
+<p id="notice"><%= notice %></p>
+
+<h1>Grandsons</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th colspan="3"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @grandsons.each do |grandson| %>
+      <tr>
+        <td><%= link_to 'Show', grandson %></td>
+        <td><%= link_to 'Edit', edit_grandson_path(grandson) %></td>
+        <td><%= link_to 'Destroy', grandson, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%= link_to 'New Grandson', new_grandson_path %>
