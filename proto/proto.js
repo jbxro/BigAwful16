@@ -1,7 +1,7 @@
 
 window.onload = function(){
 
-  var game = new Phaser.Game(1024, 600, Phaser.CANVAS, document.getElementById("main"));
+  var game = new Phaser.Game(1200, 700, Phaser.CANVAS, document.getElementById("main"));
 
   //game.state.add('Boot', GFG.Boot);
   //game.state.add('Preloader', GFG.Preloader)
@@ -20,18 +20,6 @@ var buttonCoordinates = [
   [450, 355],
 ]
 
-function loadJSON(callback) {
-  var xobj = new XMLHttpRequest();
-  xobj.overrideMimeType("application/json");
-  xobj.open('GET', '../setup.json', true);
-  xobj.onreadystatechange = function () {
-    if (xobj.readyState == 4 && xobj.status == "200") {
-      // .open will NOT return a value but simply returns undefined in async mode so use a callback
-      callback(xobj.responseText);
-      }
-    }
-  xobj.send(null);
-}
 
 var GFG = {};
 
@@ -44,33 +32,84 @@ GFG.GameState.prototype = {
 
   preload: function() {
 
-    this.game.load.image('monitor', 'monitor.png');
-    this.game.load.image('button', 'button.png');
-    this.game.load.image('cable', 'cable.png');
-    this.game.load.image('port', 'port.png');
+    this.game.load.image('background', 'assets/bg.png');
+    this.game.load.image('port', 'assets/port.png');
+    this.game.load.spritesheet('roundButtons', 'assets/buttons1.png', 32, 32);
+    this.game.load.spritesheet('squareButtons', 'assets/buttons2.png', 31, 13);
+    this.game.load.spritesheet('cableIcons', 'assets/cable_icons.png', 69, 105);
+    this.game.load.spritesheet('cablesPluggedOutlet', 'assets/cables_plugged_outlet.png', 76, 466);
+    this.game.load.spritesheet('cablesPluggedPort', 'assets/cables_plugged_port.png', 70, 419);
+    this.game.load.spritesheet('cablesFloating', 'assets/cables.png', 100, 979);
+    this.game.load.spritesheet('switch', 'assets/switch.png', 80, 68);
 
   },
 
   create: function() {
 
-    this.setup = {}
+    this.background = this.game.add.sprite(0,0,'background');
 
+    this.buttonList = [0,0,1,2,3,0,0,0];
 
-
-    this.buttonList = this.setup[0].monitor1.monitorButtons;
-
-    this.monitor = new Monitor(this, this.game, 0, 0, this.game.world, this.buttonList, 2);
-    this.monitor.generateLayout();
-
-    var cables = this.game.add.group();
-    for (var i = 0; i < 3; i++)
-    {
-        var tempSprite = cables.create(this.game.world.randomX, this.game.world.randomY, 'cable');
-        tempSprite.inputEnabled = true;
-        tempSprite.input.enableDrag(false, true);
+    this.ports = this.game.add.group();
+    for(var i=0;i<4;i++){
+      var port = new Port(this, this.game, 1045, 324 - (i * 52), this.ports);
     }
 
-    //cable.events.onDragStop.add(checkConnection, this);
+    this.ports.forEach(function(item){
+      item.inputEnabled = true;
+      item.events.onInputDown.add(function(){
+        if(item.pluggedCable.visible){
+          var index = item.pluggedCable.frame;
+          var proceed = true;
+          for(var i=0;i<this.floatingCables.children.length;i++){
+            if(this.floatingCables.children[i].active) proceed = false;
+          }
+          if(proceed){
+            this.floatingCables.children[index].toggleDrag();
+            item.pluggedCable.visible =! item.pluggedCable.visible;
+          }
+        } else {
+          for(var i=0;i<this.floatingCables.children.length;i++){
+            if(this.floatingCables.children[i].active){
+              this.floatingCables.children[i].toggleDrag();
+              item.pluggedCable.visible =! item.pluggedCable.visible;
+              item.pluggedCable.frame = i;
+            }
+          }
+        }
+      }, this);
+    }, this);
+
+    this.floatingCables = this.game.add.group();
+    for(var i=0;i<5;i++){
+      var cable = new Cable(this, this.game, 0, 0 + (i * 100), this.floatingCables, i);
+    }
+
+    this.cableIcons = this.game.add.group();
+    for(var i=0;i<5;i++){
+      this.cableIcons.create(40 + (i * 90), 580, 'cableIcons');
+      this.cableIcons.children[i].frame = i;
+      this.cableIcons.children[i].inputEnabled = true;
+    }
+
+    this.cableIcons.forEach(function(item){
+      var index = this.cableIcons.children.indexOf(item);
+      item.events.onInputDown.add(function(){
+        var proceed = true;
+        for (var i=0;i<this.floatingCables.children.length;i++){
+          if(this.floatingCables.children[i].active) proceed = false;
+        }
+        if(proceed){
+          this.cableIcons.children[index].visible = false;
+          this.floatingCables.children[index].toggleDrag();
+        }
+      }, this);
+    }, this);
+
+
+    //this.monitor = new Monitor(this, this.game, 0, 0, this.game.world, this.buttonList, 2);
+    //this.monitor.generateLayout();
+
 
   },
 
@@ -115,6 +154,33 @@ var Monitor = function(conflux, game, x, y, group, buttons, inputs) {
 Monitor.prototype = Object.create(Phaser.Sprite.prototype);
 Monitor.prototype.constructor = Monitor;
 
+var Cable = function(conflux, game, x, y, group, color) {
+  if(typeof group === 'undefined'){ group = game.world; }
+  Phaser.Sprite.call(this, game, x, y, 'cablesFloating');
+  group.add(this);
+  this.frame = color;
+  this.visible = false;
+  this.active = false;
+  this.inputEnabled = true;
+  this.input.enableDrag(false, true);
+  this.anchor.x = 0.44;
+  // ANCHOR 44, 0
+
+  this.toggleDrag = function(){
+    this.active = !this.active;
+    this.visible = !this.visible;
+  }
+
+  this.update = function(){
+    if(this.active){
+      this.x = game.input.x;
+      this.y = game.input.y+10;
+    }
+  }
+}
+Cable.prototype = Object.create(Phaser.Sprite.prototype);
+Cable.prototype.constructor = Cable;
+
 var Button = function(conflux, game, x, y, group, parent, type) {
   //BUTTON TYPES:
   // 1 - power
@@ -153,3 +219,13 @@ var Screen = function(conflux, game, x, y, group, state) {
 }
 Screen.prototype = Object.create(Phaser.Sprite.prototype);
 Screen.prototype.constructor = Screen;
+
+var Port = function(conflux, game, x, y, group) {
+  if(typeof group === 'undefined'){ group = game.world; }
+  Phaser.Sprite.call(this, game, x, y, 'port');
+  group.add(this);
+  this.pluggedCable = this.addChild(game.make.sprite(0, 0, 'cablesPluggedPort'));
+  this.pluggedCable.visible = false;
+}
+Port.prototype = Object.create(Phaser.Sprite.prototype);
+Port.prototype.constructor = Port;

@@ -1,0 +1,10 @@
+5 1045x168 / x220 / x272 / x324 % port
+6 fiolet/zielony 920x325 / 965x325 % round buttons
+  czerwone: 225x100 225x140 225x180
+            720x100 720x140 720x180
+            265x465 305x465 345x465
+            670x465 630x465 590x465
+7 905x85 945x85 % square buttons
+8 950x465 1040x465 % switches
+
+cable icons: 40x580 +90
