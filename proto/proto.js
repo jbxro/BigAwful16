@@ -34,6 +34,7 @@ GFG.GameState.prototype = {
 
     this.game.load.image('background', 'assets/bg.png');
     this.game.load.image('port', 'assets/port.png');
+    this.game.load.image('panel', 'assets/panel.png');
     this.game.load.spritesheet('roundButtons', 'assets/buttons1.png', 32, 32);
     this.game.load.spritesheet('squareButtons', 'assets/buttons2.png', 31, 13);
     this.game.load.spritesheet('cableIcons', 'assets/cable_icons.png', 69, 105);
@@ -80,6 +81,8 @@ GFG.GameState.prototype = {
       }, this);
     }, this);
 
+    this.panel = this.game.add.sprite(800, 550, 'panel');
+
     this.floatingCables = this.game.add.group();
     for(var i=0;i<5;i++){
       var cable = new Cable(this, this.game, 0, 0 + (i * 100), this.floatingCables, i);
@@ -95,13 +98,25 @@ GFG.GameState.prototype = {
     this.cableIcons.forEach(function(item){
       var index = this.cableIcons.children.indexOf(item);
       item.events.onInputDown.add(function(){
-        var proceed = true;
-        for (var i=0;i<this.floatingCables.children.length;i++){
-          if(this.floatingCables.children[i].active) proceed = false;
+        var plugged;
+        for (var i=0;i<this.ports.children.length;i++){
+          if(this.ports.children[i].pluggedCable.visible && this.ports.children[i].pluggedCable.frame == index) plugged = true;
         }
-        if(proceed){
-          this.cableIcons.children[index].visible = false;
-          this.floatingCables.children[index].toggleDrag();
+        if(!plugged){
+          var proceed = true;
+          for (var i=0;i<this.floatingCables.children.length;i++){
+            if(this.floatingCables.children[i].active){
+              this.cableIcons.children[i].alpha = 1;
+              this.floatingCables.children[i].toggleDrag();
+              if(index == i){
+                proceed = false;
+              }
+            }
+          }
+          if(proceed){
+            this.cableIcons.children[index].alpha = 0.25;
+            this.floatingCables.children[index].toggleDrag();
+          }
         }
       }, this);
     }, this);
@@ -161,6 +176,7 @@ var Cable = function(conflux, game, x, y, group, color) {
   this.frame = color;
   this.visible = false;
   this.active = false;
+  this.plugged = false;
   this.inputEnabled = true;
   this.input.enableDrag(false, true);
   this.anchor.x = 0.44;
@@ -224,7 +240,7 @@ var Port = function(conflux, game, x, y, group) {
   if(typeof group === 'undefined'){ group = game.world; }
   Phaser.Sprite.call(this, game, x, y, 'port');
   group.add(this);
-  this.pluggedCable = this.addChild(game.make.sprite(0, 0, 'cablesPluggedPort'));
+  this.pluggedCable = this.game.add.sprite(this.x, this.y, 'cablesPluggedPort');
   this.pluggedCable.visible = false;
 }
 Port.prototype = Object.create(Phaser.Sprite.prototype);
