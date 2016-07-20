@@ -35,6 +35,7 @@ GFG.GameState.prototype = {
     this.game.load.image('background', 'assets/bg.png');
     this.game.load.image('port', 'assets/port.png');
     this.game.load.image('panel', 'assets/panel.png');
+    this.game.load.image('socket', 'assets/socket.png');
     this.game.load.spritesheet('roundButtons', 'assets/buttons1.png', 32, 32);
     this.game.load.spritesheet('squareButtons', 'assets/buttons2.png', 31, 13);
     this.game.load.spritesheet('cableIcons', 'assets/cable_icons.png', 69, 105);
@@ -54,6 +55,9 @@ GFG.GameState.prototype = {
     this.ports = this.game.add.group();
     for(var i=0;i<4;i++){
       var port = new Port(this, this.game, 1045, 324 - (i * 52), this.ports);
+    }
+    for(var i=0;i<2;i++){
+      var socket = new Socket(this, this.game, 781, 424 - (i * 78), this.ports);
     }
 
     this.ports.forEach(function(item){
@@ -81,7 +85,7 @@ GFG.GameState.prototype = {
       }, this);
     }, this);
 
-    this.panel = this.game.add.sprite(800, 550, 'panel');
+    this.panel = this.game.add.sprite(750, 550, 'panel');
 
     this.floatingCables = this.game.add.group();
     for(var i=0;i<5;i++){
@@ -245,3 +249,13 @@ var Port = function(conflux, game, x, y, group) {
 }
 Port.prototype = Object.create(Phaser.Sprite.prototype);
 Port.prototype.constructor = Port;
+
+var Socket = function(conflux, game, x, y, group) {
+  if(typeof group === 'undefined'){ group = game.world; }
+  Phaser.Sprite.call(this, game, x, y, 'socket');
+  group.add(this);
+  this.pluggedCable = this.game.add.sprite(this.x, this.y, 'cablesPluggedOutlet');
+  this.pluggedCable.visible = false;
+}
+Socket.prototype = Object.create(Phaser.Sprite.prototype);
+Socket.prototype.constructor = Socket;
