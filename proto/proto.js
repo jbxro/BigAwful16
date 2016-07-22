@@ -24,6 +24,11 @@ var buttonCoordinates = [
   [590, 465]
 ]
 
+var switchCoordinates = [
+  [950, 370],
+  [950, 465]
+]
+
 
 var GFG = {};
 
@@ -97,6 +102,11 @@ GFG.GameState.prototype = {
       }, this);
     }, this);
 
+    this.switches = this.game.add.group();
+    for(var i=0;i<switchCoordinates.length;i++){
+      var aSwitch = new Switch(this, this.game, switchCoordinates[i][0], switchCoordinates[i][1], this.switches);
+    }
+
     this.panel = this.game.add.sprite(750, 550, 'panel');
 
     this.floatingCables = this.game.add.group();
@@ -142,8 +152,8 @@ GFG.GameState.prototype = {
 
   render: function() {
     this.game.debug.text("DEBUG", 32, 32);
-    //this.game.camera.x = this.game.rnd.integerInRange(-25, 25);
-    //this.game.camera.y = this.game.rnd.integerInRange(-25, 25);
+    //this.game.camera.x = this.game.rnd.integerInRange(-10, 10);
+    //this.game.camera.y = this.game.rnd.integerInRange(-10, 10);
   }
 }
 
@@ -335,3 +345,23 @@ var Socket = function(conflux, game, x, y, group) {
 }
 Socket.prototype = Object.create(Phaser.Sprite.prototype);
 Socket.prototype.constructor = Socket;
+
+
+var Switch = function(conflux, game, x, y, group) {
+  if(typeof group === 'undefined'){ group = game.world; }
+  Phaser.Sprite.call(this, game, x, y, 'switch');
+  group.add(this);
+  this.state = false;
+  this.inputEnabled = true;
+
+  this.toggle = function(){
+    this.state =! this.state;
+  }
+  this.events.onInputDown.add(this.toggle, this);
+
+  this.update = function(){
+    this.frame = this.state ? 1 : 0;
+  }
+}
+Switch.prototype = Object.create(Phaser.Sprite.prototype);
+Switch.prototype.constructor = Switch;
