@@ -1,9 +1,4 @@
 Rails.application.routes.draw do
-  resources :messages
-  resources :grandpas
-  resources :grandsons
-  resources :games
-  # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
-
+  get '/game', to: 'games#join'
   get '/', to: 'menu#home'
 end

@@ -1,7 +1,6 @@
 class MenuController < ApplicationController
   def home
-    games = Game.all
-    @grandpa_games = games.select{|g| g.grandpa.nil? && g.grandson.present?}
-    @grandson_games = games.select{|g| g.grandson.nil? && g.grandpa.present?}
+    @grandson_games = Game.needs_grandpas
+    @grandpa_games = Game.needs_grandsons
   end
 end

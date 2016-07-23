@@ -1,0 +1,6 @@
+<div>
+  <div>Yay! You joined game <%= @game.id %></div>
+
+  <div>Grandson id: <%= @game.grandson.try(:id) || "Waiting for Grandson" %></div>
+  <div>Grandpa id: <%= @game.grandpa.try(:id) || "Waiting for Grandpa" %></div>
+</div>
