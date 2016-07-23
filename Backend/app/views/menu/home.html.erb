@@ -1,6 +1,17 @@
 <div>
-  <a href="/game?as=grandpa">Play as Grandpa</a> <span>(<%=@grandson_games.count%> grandsons are ready to help.)</span>
+  <a href="/game?as=grandpa">Play as Grandpa</a> <span>(<span class='grandson-count'><%=@grandson_games.count%></span> grandsons are ready to help.)</span>
 </div>
 <div>
-  <a href="/game?as=grandson">Play as Grandson</a> <span>(<%=@grandpa_games.count%> grandpas need your help.)</span>
+  <a href="/game?as=grandson">Play as Grandson</a> <span>(<span class='grandpa-count'><%=@grandpa_games.count%></span> grandpas need your help.)</span>
 </div>
+
+<div>
+  <span class="lobby-count">0</span> players are currently chilling on this page.
+</div>
+
+<div class='message-log'>
+</div>
+
+<%= javascript_tag do %>
+  App.connect_to_menu()
+<% end %>

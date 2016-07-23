@@ -4,3 +4,7 @@
   <div>Grandson id: <%= @game.grandson.try(:id) || "Waiting for Grandson" %></div>
   <div>Grandpa id: <%= @game.grandpa.try(:id) || "Waiting for Grandpa" %></div>
 </div>
+
+<%= javascript_tag do %>
+  App.connect_to_game('<%=@user.type%>', <%=@user.id%>)
+<% end %>
