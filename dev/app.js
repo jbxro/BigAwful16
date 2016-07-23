@@ -14,13 +14,37 @@ function startPhaserApp(gameType, id, data){
 }
 
 var data = {
+/*
+  Make sure that grandpa's computer and tower don't share cable colors!
+*/
+"grandpasHardware": {"monitor": 2,"tower": 1}, // randomized 0 - 2
 
-"grandpasHardware": {"monitor": 2,"tower": 1},
+"monitors":[ // array of possible monitors
+  {
+    "name": "SCL-50EX", // (semi)randomly generated
+    "type": "XVD", // XVD or SGA (replace with something funny later)
+    "logo": 2, // just in case
+    "monitorButtons": [0,0,1,0,0,0,2,0,0,0,4,3],
+    /*
+    12 possible button slots, fill up 4:
+    0 - empty
+    1 - power
+    2 - input
+    3 - degauss
+    4 - nothing
+    */
+    "monitorCables": {"power": "blue", "data": "red"},
+    /*
+    Possible colors:
+    blue, green, yellow, red, purple
+    */
+    "monitorInput": 2 // number of active input. randomized in range 0 - 3
+  },
 
-"monitors":[
   {
     "name": "SCL-50EX",
     "logo": 2,
+    "type": "SGA",
     "monitorButtons": [0,0,1,0,0,0,2,0,0,0,4,3],
     "monitorCables": {"power": "blue", "data": "red"},
     "monitorInput": 2
@@ -29,46 +53,42 @@ var data = {
   {
     "name": "SCL-50EX",
     "logo": 2,
-    "monitorButtons": [0,0,1,0,0,0,2,0,0,0,4,3],
-    "monitorCables": {"power": "blue", "data": "red"},
-    "monitorInput": 2
-  },
-
-  {
-    "name": "SCL-50EX",
-    "logo": 2,
+    "type": "SGA",
     "monitorButtons": [0,0,1,0,0,0,2,0,0,0,4,3],
     "monitorCables": {"power": "blue", "data": "red"},
     "monitorInput": 2
   }
 ],
 
-"towers": [
+"towers": [ // array of possible towers
   {
     "name": "Grinder XT",
     "logo": 3,
-    "towerPorts": [0,1,2,0],
+    "towerPort": 2, // correct port to connect monitor - randomize 0 - 3
     "towerCable": "green",
-    "towerSwitchNumber": 2,
-    "towerState": {"powerOn": "left", "monitorOn": "right"}
+    "roundButtons": [1,2], // randomize 0 - 2
+    "squareButtons": [1,2], // randomize 0 - 2
+    "towerSwitches": {"powerOn": "left", "monitorXVD": "right"} // randomize left or right
   },
 
   {
     "name": "Grinder XT",
     "logo": 3,
-    "towerPorts": [0,1,2,0],
+    "towerPort": 2,
     "towerCable": "green",
-    "towerSwitchNumber": 2,
-    "towerState": {"powerOn": "left", "monitorOn": "right"}
+    "roundButtons": [1,2],
+    "squareButtons": [1,2],
+    "towerSwitches": {"powerOn": "left", "monitorXVD": "right"}
   },
 
   {
     "name": "Grinder XT",
     "logo": 3,
-    "towerPorts": [0,1,2,0],
+    "towerPort": 2,
     "towerCable": "green",
-    "towerSwitchNumber": 2,
-    "towerState": {"powerOn": "left", "monitorOn": "right"}
+    "roundButtons": [1,2],
+    "squareButtons": [1,2],
+    "towerSwitches": {"powerOn": "left", "monitorXVD": "right"}
   }
 
 ]
@@ -102,12 +122,27 @@ GFG.GrandpaGame.prototype = {
     [590, 465]
   ],
 
+  dummyRoundButtonsCoordinates: [
+    [920, 325],
+    [965, 325]
+  ],
+
+  dummySquareButtonsCoordinates: [
+    [905, 85],
+    [945, 85]
+  ],
+
   colors: {
     "blue": 0,
     "yellow": 1,
     "green": 2,
     "red": 3,
     "purple": 4
+  },
+
+  switchState: {
+    "left": false,
+    "right": true
   },
 
   init: function(inputData) {
@@ -150,14 +185,40 @@ GFG.GrandpaGame.prototype = {
     this.game.world.bringToTop(this.monitor.buttons);
 
     this.ports = this.game.add.group();
+    this.sockets = this.game.add.group();
     for(var i=0;i<4;i++){
       var port = new Port(this, this.game, 1045, 324 - (i * 52), this.ports);
     }
     for(var i=0;i<2;i++){
-      var socket = new Socket(this, this.game, 781, 424 - (i * 78), this.ports);
+      var socket = new Socket(this, this.game, 781, 424 - (i * 78), this.sockets);
     }
 
     this.ports.forEach(function(item){
+      item.inputEnabled = true;
+      item.events.onInputDown.add(function(){
+        if(item.pluggedCable.visible){
+          var index = item.pluggedCable.frame;
+          var proceed = true;
+          for(var i=0;i<this.floatingCables.children.length;i++){
+            if(this.floatingCables.children[i].active) proceed = false;
+          }
+          if(proceed){
+            this.floatingCables.children[index].toggleDrag();
+            item.pluggedCable.visible =! item.pluggedCable.visible;
+          }
+        } else {
+          for(var i=0;i<this.floatingCables.children.length;i++){
+            if(this.floatingCables.children[i].active){
+              this.floatingCables.children[i].toggleDrag();
+              item.pluggedCable.visible =! item.pluggedCable.visible;
+              item.pluggedCable.frame = i;
+            }
+          }
+        }
+      }, this);
+    }, this);
+
+    this.sockets.forEach(function(item){
       item.inputEnabled = true;
       item.events.onInputDown.add(function(){
         if(item.pluggedCable.visible){
@@ -208,6 +269,9 @@ GFG.GrandpaGame.prototype = {
         for (var i=0;i<this.ports.children.length;i++){
           if(this.ports.children[i].pluggedCable.visible && this.ports.children[i].pluggedCable.frame == index) plugged = true;
         }
+        for (var i=0;i<this.sockets.children.length;i++){
+          if(this.sockets.children[i].pluggedCable.visible && this.sockets.children[i].pluggedCable.frame == index) plugged = true;
+        }
         if(!plugged){
           var proceed = true;
           for (var i=0;i<this.floatingCables.children.length;i++){
@@ -228,7 +292,22 @@ GFG.GrandpaGame.prototype = {
     }, this);
   },
 
-  update: function() {},
+  update: function() {
+    this.monitor.pluggedIn = false;
+    this.sockets.forEach(function(item){
+      if(item.pluggedCable.visible && (item.pluggedCable.frame == this.colors[this.grandpasMonitor.monitorCables.power])){
+        this.monitor.pluggedIn = true;
+      }
+    }, this);
+
+    this.monitor.receivingSignal = false;
+    this.ports.forEach(function(item){
+      var index = this.ports.children.indexOf(item);
+      if(item.pluggedCable.visible && (item.pluggedCable.frame == this.colors[this.grandpasMonitor.monitorCables.data]) && (index == this.grandpasTower.towerPort)){
+        this.monitor.receivingSignal = true;
+      }
+    }, this);
+  },
 
   render: function() {
     this.game.debug.text("Frustration: " + String(this.frustration), 32, 32);
@@ -238,13 +317,29 @@ GFG.GrandpaGame.prototype = {
     }
   },
 
-  addFrustration: function() {
+  addFrustration: function(amount) {
+    this.updateFrustrationRate();
+    if (typeof amount === 'undefined'){
+      amount = this.frustrationRate;
+    }
     if (this.frustration <= 100) {
-      this.frustration += this.frustrationRate;
+      this.frustration += amount;
       if (this.frustration > 100){
         this.frustration = 100;
       }
+      if (this.frustration < 0){
+        this.frustration = 0;
+      }
     }
+  },
+
+  updateFrustrationRate: function() {
+    var r = 0;
+    this.monitor.pluggedIn ? r-- : r++;
+    this.monitor.powerOn ? r-- : r++;
+    this.monitor.receivingSignal ? r-- : r++;
+    (this.monitor.input == this.monitor.correctInput) ? r-- : r++;
+    this.frustrationRate = r;
   }
 }
 
@@ -254,6 +349,7 @@ var Monitor = function(conflux, game, x, y, group, buttons, correctInput) {
   this.originalX = x;
   this.originalY = y;
   this.buttonList = buttons;
+  this.conflux = conflux;
   this.frame = 0;
   this.input = 0;
   this.correctInput = correctInput;
@@ -283,10 +379,12 @@ var Monitor = function(conflux, game, x, y, group, buttons, correctInput) {
   }
 
   this.togglePower = function(){
-    console.log("power!");
     if(this.pluggedIn){
+      console.log("power!");
       this.powerOn =! this.powerOn;
       this.displayOverlay();
+    } else {
+      this.addFrustration();
     }
   }
   this.toggleInput = function(){
@@ -295,13 +393,19 @@ var Monitor = function(conflux, game, x, y, group, buttons, correctInput) {
       if(this.input > 3) this.input = 0;
       this.displayOverlay();
       console.log("input " + String(this.input));
+    } else {
+      this.addFrustration();
     }
   }
   this.degauss = function(){
-    console.log("degauss!");
-    this.toggleShake();
-    this.game.time.events.add(Phaser.Timer.SECOND * 1, this.toggleShake, this);
-
+    if(this.powerOn){
+      console.log("degauss!");
+      this.toggleShake();
+      this.game.time.events.add(Phaser.Timer.SECOND * 1, this.toggleShake, this);
+      this.addFrustration(true);
+    } else {
+      this.addFrustration();
+    }
   }
 
   this.toggleShake = function(){
@@ -325,15 +429,24 @@ var Monitor = function(conflux, game, x, y, group, buttons, correctInput) {
     this.overlayActive = false;
   }
 
+  this.addFrustration = function(moreFrustrating){
+    if(moreFrustrating){
+      this.conflux.addFrustration(10);
+    } else {
+      this.conflux.addFrustration(5);
+    }
+  }
+
   this.update = function(){
     this.overlay.frame = this.input;
+    if(!this.pluggedIn) this.powerOn = false;
     if(this.powerOn){
       this.overlay.visible = this.overlayActive;
       if((this.input == this.correctInput) && this.receivingSignal){
-        this.frame = 1;
+        this.frame = 2;
         this.working = true;
       } else {
-        this.frame = 0;
+        this.frame = 1;
       }
     } else {
       this.overlay.visible = false;
