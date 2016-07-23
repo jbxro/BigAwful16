@@ -66,8 +66,8 @@ var data = {
     "logo": 3,
     "towerPort": 2, // correct port to connect monitor - randomize 0 - 3
     "towerCable": "green",
-    "roundButtons": [1,2], // randomize 0 - 2
-    "squareButtons": [1,2], // randomize 0 - 2
+    "roundButtons": [1,0], // randomize 0 - 2
+    "squareButtons": [2,2], // randomize 0 - 2
     "towerSwitches": {"powerOn": "left", "monitorXVD": "right"} // randomize left or right
   },
 
@@ -176,13 +176,27 @@ GFG.GrandpaGame.prototype = {
 
     this.frustration = 0;
     this.frustrationRate = 1;
-    this.game.time.events.loop(2 * Phaser.Timer.SECOND, this.addFrustration, this);
+    this.game.time.events.loop(5 * Phaser.Timer.SECOND, this.addFrustration, this);
 
     this.monitor = new Monitor(this, this.game, 279, 113, this.game.world, this.grandpasMonitor.monitorButtons, this.grandpasMonitor.monitorInput);
     this.monitor.generateLayout();
 
+    this.tower = new Tower(this, this.game, this.grandpasTower);
+
     this.background = this.game.add.sprite(0,0,'background');
     this.game.world.bringToTop(this.monitor.buttons);
+
+    this.dummyButtons = this.game.add.group();
+    for(var i=0;i<this.grandpasTower.roundButtons.length;i++){
+      if(this.grandpasTower.roundButtons[i] != 0) {
+        var butt = new DummyButton(this, this.game, this.dummyRoundButtonsCoordinates[i][0], this.dummyRoundButtonsCoordinates[i][1], this.dummyButtons, 'roundButtons', this.grandpasTower.roundButtons[i]);
+      }
+    }
+    for(var i=0;i<this.grandpasTower.squareButtons.length;i++){
+      if(this.grandpasTower.squareButtons[i] != 0) {
+        var butt = new DummyButton(this, this.game, this.dummySquareButtonsCoordinates[i][0], this.dummySquareButtonsCoordinates[i][1], this.dummyButtons, 'squareButtons', this.grandpasTower.squareButtons[i]);
+      }
+    }
 
     this.ports = this.game.add.group();
     this.sockets = this.game.add.group();
@@ -300,13 +314,30 @@ GFG.GrandpaGame.prototype = {
       }
     }, this);
 
-    this.monitor.receivingSignal = false;
+    this.monitor.connected = false;
     this.ports.forEach(function(item){
       var index = this.ports.children.indexOf(item);
       if(item.pluggedCable.visible && (item.pluggedCable.frame == this.colors[this.grandpasMonitor.monitorCables.data]) && (index == this.grandpasTower.towerPort)){
-        this.monitor.receivingSignal = true;
+        this.monitor.connected = true;
       }
     }, this);
+
+    this.tower.pluggedIn = false;
+    this.tower.powerOn = false;
+    this.tower.sendingData = false;
+    this.sockets.forEach(function(item){
+      if(item.pluggedCable.visible && (item.pluggedCable.frame == this.colors[this.grandpasTower.towerCable])){
+        this.tower.pluggedIn = true;
+      }
+    }, this);
+
+    if(this.tower.pluggedIn){
+      this.tower.powerOn = (this.switches.children[0].state == this.tower.powerOnSetting) ? true : false;
+    }
+
+    if(this.tower.powerOn){
+      this.tower.sendingData = (this.switches.children[1].state == this.tower.monitorSetting) ? true : false;
+    }
   },
 
   render: function() {
@@ -337,7 +368,9 @@ GFG.GrandpaGame.prototype = {
     var r = 0;
     this.monitor.pluggedIn ? r-- : r++;
     this.monitor.powerOn ? r-- : r++;
-    this.monitor.receivingSignal ? r-- : r++;
+    this.monitor.connected ? r-- : r++;
+    this.tower.pluggedIn ? r-- : r++;
+    this.tower.powerOn ? r-- : r++;
     (this.monitor.input == this.monitor.correctInput) ? r-- : r++;
     this.frustrationRate = r;
   }
@@ -356,7 +389,7 @@ var Monitor = function(conflux, game, x, y, group, buttons, correctInput) {
   group.add(this);
   this.powerOn = false;
   this.pluggedIn = false;
-  this.receivingSignal = false;
+  this.connected = false;
   this.working = false;
   this.buttons = game.add.group();
   this.overlay = this.addChild(this.game.make.sprite(10, 10, 'signs'));
@@ -442,7 +475,7 @@ var Monitor = function(conflux, game, x, y, group, buttons, correctInput) {
     if(!this.pluggedIn) this.powerOn = false;
     if(this.powerOn){
       this.overlay.visible = this.overlayActive;
-      if((this.input == this.correctInput) && this.receivingSignal){
+      if((this.input == this.correctInput) && this.connected && conflux.tower.sendingData){
         this.frame = 2;
         this.working = true;
       } else {
@@ -461,6 +494,22 @@ var Monitor = function(conflux, game, x, y, group, buttons, correctInput) {
 Monitor.prototype = Object.create(Phaser.Sprite.prototype);
 Monitor.prototype.constructor = Monitor;
 
+var Tower = function(conflux, game, grandpasTower) {
+  this.powerOn = false;
+  this.sendingData = false;
+  this.pluggedIn = false;
+  if(grandpasTower.towerSwitches.powerOn == "left") {
+    this.powerOnSetting = false;
+  } else {
+    this.powerOnSetting = true;
+  }
+  if(grandpasTower.towerSwitches.monitorXVD == "left") {
+    this.monitorSetting = false;
+  } else {
+    this.monitorSetting = true;
+  }
+}
+
 
 var Button = function(conflux, game, x, y, group, parent, type) {
   //BUTTON TYPES:
@@ -474,6 +523,7 @@ var Button = function(conflux, game, x, y, group, parent, type) {
   group.add(this);
   this.type = type;
   this.inputEnabled = true;
+  this.conflux = conflux;
 
   this.action = function(){
     this.frame++;
@@ -491,6 +541,7 @@ var Button = function(conflux, game, x, y, group, parent, type) {
         parent.degauss();
         break;
       case 4:
+        this.conflux.addFrustration(5);
         break;
       default:
         console.log("Invalid button type.");
@@ -501,6 +552,29 @@ var Button = function(conflux, game, x, y, group, parent, type) {
 Button.prototype = Object.create(Phaser.Sprite.prototype);
 Button.prototype.constructor = Button;
 
+var DummyButton = function(conflux, game, x, y, group, key, color) {
+  if(typeof group === 'undefined'){ group = game.world; }
+  Phaser.Sprite.call(this, game, x, y, key);
+  if(color == 1) {
+    this.frame = 0;
+  } else {
+    this.frame = 2;
+  }
+  group.add(this);
+  this.conflux = conflux;
+  this.inputEnabled = true;
+
+  this.action = function(){
+    this.frame++;
+    this.game.time.events.add(Phaser.Timer.SECOND * 0.1, function(){
+      this.frame--;
+    }, this);
+    this.conflux.addFrustration(5);
+  }
+  this.events.onInputDown.add(this.action, this);
+}
+DummyButton.prototype = Object.create(Phaser.Sprite.prototype);
+DummyButton.prototype.constructor = DummyButton;
 
 var Cable = function(conflux, game, x, y, group, color) {
   if(typeof group === 'undefined'){ group = game.world; }
@@ -558,9 +632,13 @@ var Switch = function(conflux, game, x, y, group) {
   group.add(this);
   this.state = false;
   this.inputEnabled = true;
+  this.conflux = conflux
 
   this.toggle = function(){
     this.state =! this.state;
+    if(!this.conflux.tower.pluggedIn){
+      this.conflux.addFrustration(5)
+    }
   }
   this.events.onInputDown.add(this.toggle, this);
 
