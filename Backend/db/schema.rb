@@ -21,14 +21,14 @@ ActiveRecord::Schema.define(version: 20160723150208) do
     t.integer  "game_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer  "cid"
+    t.string   "cid"
   end
 
   create_table "grandsons", force: :cascade do |t|
     t.integer  "game_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer  "cid"
+    t.string   "cid"
   end
 
   create_table "messages", force: :cascade do |t|
