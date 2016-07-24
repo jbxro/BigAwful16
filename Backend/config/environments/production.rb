@@ -1,6 +1,10 @@
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
 
+  # Production server url
+  config.web_socket_server_url = "wss://sheltered-bayou-31768.herokuapp.com/cable" 
+  config.action_cable.allowed_request_origins = ['https://sheltered-bayou-31768.herokuapp.com', 'http://sheltered-bayou-31768.herokuapp.com']
+
   # Code is not reloaded between requests.
   config.cache_classes = true
 
