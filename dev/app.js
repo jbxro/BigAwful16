@@ -151,19 +151,21 @@ GFG.GrandpaGame.prototype = {
 
   preload: function() {
 
-    this.game.load.image('background', 'assets/bg.png');
-    this.game.load.image('port', 'assets/port.png');
-    this.game.load.image('panel', 'assets/panel.png');
-    this.game.load.image('socket', 'assets/socket.png');
-    this.game.load.spritesheet('roundButtons', 'assets/buttons1.png', 32, 32);
-    this.game.load.spritesheet('squareButtons', 'assets/buttons2.png', 31, 13);
-    this.game.load.spritesheet('cableIcons', 'assets/cable_icons.png', 69, 105);
-    this.game.load.spritesheet('cablesPluggedOutlet', 'assets/cables_plugged_outlet.png', 76, 466);
-    this.game.load.spritesheet('cablesPluggedPort', 'assets/cables_plugged_port.png', 70, 419);
-    this.game.load.spritesheet('cablesFloating', 'assets/cables.png', 100, 979);
-    this.game.load.spritesheet('switch', 'assets/switch.png', 80, 68);
-    this.game.load.spritesheet('signs', 'assets/signs.png', 160, 80);
-    this.game.load.spritesheet('screen', 'assets/screen.png', 412, 336);
+    this.game.load.image('background', 'assets/grandpa/bg.png');
+    this.game.load.image('port', 'assets/grandpa/port.png');
+    this.game.load.image('panel', 'assets/grandpa/panel.png');
+    this.game.load.image('socket', 'assets/grandpa/socket.png');
+    this.game.load.image('frustrationBar', 'assets/grandpa/barInside.png');
+    this.game.load.spritesheet('roundButtons', 'assets/grandpa/buttons1.png', 32, 32);
+    this.game.load.spritesheet('squareButtons', 'assets/grandpa/buttons2.png', 31, 13);
+    this.game.load.spritesheet('cableIcons', 'assets/grandpa/cable_icons.png', 69, 105);
+    this.game.load.spritesheet('cablesPluggedOutlet', 'assets/grandpa/cables_plugged_outlet.png', 76, 466);
+    this.game.load.spritesheet('cablesPluggedPort', 'assets/grandpa/cables_plugged_port.png', 70, 419);
+    this.game.load.spritesheet('cablesFloating', 'assets/grandpa/cables.png', 100, 979);
+    this.game.load.spritesheet('switch', 'assets/grandpa/switch.png', 80, 68);
+    this.game.load.spritesheet('signs', 'assets/grandpa/signs.png', 160, 80);
+    this.game.load.spritesheet('screen', 'assets/grandpa/screen.png', 412, 336);
+    this.game.load.spritesheet('frustrationBarWrapper', 'assets/grandpa/barWrapper.png', 476, 78);
 
   },
 
@@ -264,6 +266,12 @@ GFG.GrandpaGame.prototype = {
 
     this.panel = this.game.add.sprite(750, 550, 'panel');
 
+    this.barInside = this.game.add.sprite(655, 635, 'frustrationBar');
+    this.barInsideWidth = this.barInside.width;
+    this.barCropRect = new Phaser.Rectangle(0,0,0,this.barInside.height);
+    this.barInside.crop(this.barCropRect);
+    this.barWrapper = this.game.add.sprite(650, 600, 'frustrationBarWrapper');
+
     this.floatingCables = this.game.add.group();
     for(var i=0;i<5;i++){
       var cable = new Cable(this, this.game, 0, 0 + (i * 100), this.floatingCables, i);
@@ -307,6 +315,7 @@ GFG.GrandpaGame.prototype = {
   },
 
   update: function() {
+    this.barInside.updateCrop();
     this.monitor.pluggedIn = false;
     this.sockets.forEach(function(item){
       if(item.pluggedCable.visible && (item.pluggedCable.frame == this.colors[this.grandpasMonitor.monitorCables.power])){
@@ -362,6 +371,9 @@ GFG.GrandpaGame.prototype = {
         this.frustration = 0;
       }
     }
+    var tween = this.game.add.tween(this.barCropRect).to( { width: (this.frustration/100)*this.barInsideWidth }, 100, "Linear", true);
+    tween.start();
+    this.frustration >= 80 ? this.barWrapper.frame=1 : this.barWrapper.frame=0;
   },
 
   updateFrustrationRate: function() {
