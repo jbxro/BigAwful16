@@ -1,15 +1,31 @@
 window.onload = function(){
-  startPhaserApp("grandpa", 0, data);
+  startPhaserApp("grandson", 0, data);
 }
 
 function startPhaserApp(gameType, id, data){
   var game = new Phaser.Game(1200, 700, Phaser.CANVAS, document.getElementById("main"));
+  WebFontConfig = {
+    //  'active' means all requested fonts have finished loading
+    //  We set a 1 second delay before calling 'createText'.
+    //  For some reason if we don't the browser cannot render the text the first time it's created.
+    active: function() { game.time.events.add(Phaser.Timer.SECOND, createText, this); },
+    //  The Google Fonts we want to load (specify as many as you like in the array)
+    google: {
+      families: ['Roboto']
+    }
+  };
   game.state.add('GrandpaGame', GFG.GrandpaGame);
-  // game.state.add('GrandchildGame', GFG.GrandchildGame);
-  if(gameType == "grandpa"){
-    game.state.start('GrandpaGame', false, true, data);
-  } else {
-    console.log("Welp!");
+  game.state.add('GrandsonGame', GFG.GrandsonGame);
+  switch (gameType) {
+    case 'grandpa':
+      game.state.start('GrandpaGame', false, true, data);
+      break;
+    case 'grandson':
+      game.state.start('GrandsonGame', false, true, data);
+      break;
+    default:
+      console.log('invalid game type')
+      return 1;
   }
 }
 
@@ -96,6 +112,137 @@ var data = {
 };
 
 var GFG = {};
+
+GFG.GrandsonGame = function(game){};
+
+GFG.GrandsonGame.prototype = {
+  // Settings
+  // State variables
+  colors: {
+    "blue": 0,
+    "yellow": 1,
+    "green": 2,
+    "red": 3,
+    "purple": 4
+  },
+
+  switchState: {
+    "left": false,
+    "right": true
+  },
+
+  switchCoordinates: [
+    [35, 160],
+    [35, 210]
+  ],
+
+  buttonCoordinates: [
+    [6, 20],
+    [6, 40],
+    [6, 60],
+    [252, 20],
+    [252, 40],
+    [252, 60],
+    [25, 204],
+    [50, 204],
+    [75, 204],
+    [185, 204],
+    [205, 204],
+    [230, 204]
+  ],
+
+  dummyRoundButtonsCoordinates: [
+    [19, 133],
+    [42, 133]
+  ],
+
+  dummySquareButtonsCoordinates: [
+    [12, 12],
+    [32, 12]
+  ],
+
+  portCoordinates: [
+    [83, 55],
+    [83, 81],
+    [83, 107],
+    [83, 133],
+  ],
+
+  monitorCoordinates: [
+    [95, 106],
+    [462, 106],
+    [830, 106]
+  ],
+
+  towerCoordinates: [
+    [165, 407],
+    [533, 407],
+    [900, 407]
+  ],
+
+  portDescriptions: [
+    "Coaxial Port",
+    "WiFi Port",
+    "Laser Communication Port",
+    "Cellular Network Bus",
+    "IBS Port",
+    "GBS Port",
+    "PDA Port",
+    "YOSPOS Interface Connector",
+    "NOTIM Port (ED variety)",
+    "NOTIM Port (ANT variety)",
+    "Over/Under Port",
+    "VR Port",
+    "Washing machine interface"
+  ],
+
+  init: function(inputData) {
+    this.data = inputData;
+  },
+
+  preload: function(){
+
+    //  Load the Google WebFont Loader script
+    this.game.load.script('webfont', '//ajax.googleapis.com/ajax/libs/webfont/1.4.7/webfont.js');
+
+    this.game.load.image('background', 'assets/grandson/bg.png');
+    this.game.load.image('port', 'assets/grandson/port.png');
+    this.game.load.image('monitor', 'assets/grandson/monitor.png');
+    this.game.load.image('tower', 'assets/grandson/tower.png');
+    this.game.load.spritesheet('roundButtons', 'assets/grandson/roundButtons.png', 16, 16);
+    this.game.load.spritesheet('squareButtons', 'assets/grandson/squareButtons.png', 16, 6);
+    this.game.load.spritesheet('cableIcons', 'assets/grandson/cable_icons.png', 35, 53);
+    this.game.load.spritesheet('switch', 'assets/grandson/switch.png', 40, 35);
+    this.game.load.spritesheet('bubble', 'assets/grandson/bubble.png', 343, 289);
+
+  },
+
+  create: function(){
+
+    this.background = this.game.add.sprite(0, 0, 'background');
+
+    this.monitors = this.game.add.group();
+    for(var i=0;i<this.data.monitors.length;i++){
+      var coords = this.monitorCoordinates[i];
+      var monitor = new SmallMonitor(this, this.game, coords[0], coords[1], this.monitors, this.data.monitors[i]);
+    }
+    this.towers = this.game.add.group();
+    for(var i=0;i<this.data.monitors.length;i++){
+      var coords = this.towerCoordinates[i];
+      var monitor = new SmallTower(this, this.game, coords[0], coords[1], this.towers, this.data.towers[i]);
+    }
+
+  },
+
+  update: function(){
+
+  },
+
+  render: function(){
+
+  }
+
+}
 
 GFG.GrandpaGame = function(game){};
 
@@ -350,7 +497,6 @@ GFG.GrandpaGame.prototype = {
   },
 
   render: function() {
-    this.game.debug.text("Frustration: " + String(this.frustration), 32, 32);
     if(this.frustration >= 50){
       this.game.camera.x = this.game.rnd.integerInRange(-1*((this.frustration-50)/5), (this.frustration-50)/10);
       this.game.camera.y = this.game.rnd.integerInRange(-1*((this.frustration-50)/5), (this.frustration-50)/10);
@@ -660,3 +806,96 @@ var Switch = function(conflux, game, x, y, group) {
 }
 Switch.prototype = Object.create(Phaser.Sprite.prototype);
 Switch.prototype.constructor = Switch;
+
+var Bubble = function(game, parent, type, data, description) {
+  this.parentSprite = parent;
+  Phaser.Sprite.call(this, game, 0, 0, 'bubble');
+  this.game.world.add(this);
+  this.inputEnabled = true;
+
+  this.x = this.parentSprite.x + (0.5*this.parentSprite.width);
+  this.y = this.parentSprite.y + (0.5*this.parentSprite.height);
+
+  var left = this.x < 0.5*game.width;
+  var top = this.y < 0.5*game.height;
+
+  if (!left && top) {
+    this.frame = 0;
+    this.anchor.setTo(0.9, 0);
+  } else if (left && top) {
+    this.frame = 1;
+    this.anchor.setTo(0.1, 0);
+  } else if (!left && !top) {
+    this.frame = 2;
+    this.anchor.setTo(0.9, 1);
+  } else {
+    this.frame = 3;
+    this.anchor.setTo(0.1, 1);
+  }
+
+  if(type == "device"){
+    this.cable = this.addChild(this.game.make.sprite(-1*(this.getLocalBounds().width * this.anchor.x), -1*(this.getLocalBounds().height * this.anchor.y), 'cableIcons'));
+  } else if(type == "control"){
+
+  }
+
+  this.destroySelf = function(){
+    this.parentSprite.displayingHelp = false;
+    this.destroy();
+  }
+  this.events.onInputDown.add(this.destroySelf, this);
+
+}
+Bubble.prototype = Object.create(Phaser.Sprite.prototype);
+Bubble.prototype.constructor = Bubble;
+
+var SmallMonitor = function(conflux, game, x, y, group, data) {
+  if(typeof group === 'undefined'){ group = game.world; }
+  Phaser.Sprite.call(this, game, x, y, 'monitor');
+  group.add(this);
+  this.inputEnabled = true;
+  this.displayingHelp = false;
+  this.game = game;
+  this.conflux = conflux;
+
+  this.addBubble = function(){
+    if(!this.displayingHelp){
+      var bubble = new Bubble(this.game, this, "device", "", "");
+      this.displayingHelp = true;
+    }
+  }
+  this.events.onInputDown.add(this.addBubble, this);
+
+}
+SmallMonitor.prototype = Object.create(Phaser.Sprite.prototype);
+SmallMonitor.prototype.constructor = SmallMonitor;
+
+var SmallTower = function(conflux, game, x, y, group, data) {
+  if(typeof group === 'undefined'){ group = game.world; }
+  Phaser.Sprite.call(this, game, x, y, 'tower');
+  group.add(this);
+  this.inputEnabled = true;
+  this.displayingHelp = false;
+  this.game = game;
+  this.conflux = conflux;
+
+  this.addBubble = function(){
+    if(!this.displayingHelp){
+      var bubble = new Bubble(this.game, this, "device", "", "");
+      this.displayingHelp = true;
+    }
+  }
+  this.events.onInputDown.add(this.addBubble, this);
+}
+SmallTower.prototype = Object.create(Phaser.Sprite.prototype);
+SmallTower.prototype.constructor = SmallTower;
+
+var Element = function(conflux, game, x, y, group, key, description) {
+  if(typeof group === 'undefined'){ group = game.world; }
+  Phaser.Sprite.call(this, game, x, y, key);
+  group.add(this);
+  this.inputEnabled = true;
+  this.displayingHelp = false;
+}
+Element.prototype = Object.create(Phaser.Sprite.prototype);
+Element.prototype.constructor = Element;
