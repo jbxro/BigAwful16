@@ -1,9 +1,14 @@
 <div>
-  <div>Yay! You joined game <%= @game.id %></div>
-
-  <div>Grandson id: <%= @game.grandson.try(:id) || "Waiting for Grandson" %></div>
-  <div>Grandpa id: <%= @game.grandpa.try(:id) || "Waiting for Grandpa" %></div>
+  <div>Yay! You joined this game as a <%= @user.type %></div>
+  <div>You are currently: <b><span id='status'></span></b>
 </div>
+
+<div id='message-log'>
+</div>
+
+<form id="message-builder">
+  <button>Submit</button>
+</form>
 
 <%= javascript_tag do %>
   App.connect_to_game('<%=@user.type%>', <%=@user.id%>)
