@@ -1,0 +1,13 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  grandpa_wordbank: MyText
+  grandson_wordbank: MyText
+  grandpa_dictionary: MyText
+  grandson_dictionary: MyText
+
+two:
+  grandpa_wordbank: MyText
+  grandson_wordbank: MyText
+  grandpa_dictionary: MyText
+  grandson_dictionary: MyText

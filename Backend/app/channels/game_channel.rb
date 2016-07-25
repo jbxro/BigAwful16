@@ -27,10 +27,13 @@ class GameChannel < ApplicationCable::Channel
     end
     @user.cid = uuid
     @user.save!
-
     @game = @user.game
     stream_from "game_#{@game.id}"
 
+    @translator = @game.translator
+    ActionCable.server
+
+    # If the Grandpa is registering...
     if(@user.type == 'Grandpa')
       ActionCable.server.broadcast "player_#{@user.cid}",
         action: 'message',
@@ -40,6 +43,7 @@ class GameChannel < ApplicationCable::Channel
         message: "Waiting for your Grandson to pick up the phone"
     end
 
+    # If the grandson is registering...
     if(@user.type == 'Grandson')
       ActionCable.server.broadcast "player_#{@user.cid}",
         action: 'message',
@@ -49,26 +53,12 @@ class GameChannel < ApplicationCable::Channel
         message: "Enjoying yourself"
     end
 
+    # If both users are now registered, start the game!
     if(@game.grandson && @game.grandpa)
-      ActionCable.server.broadcast "player_#{@game.grandson.cid}",
-        action: 'message',
-        message: "The phone rings. You answer it."
-      ActionCable.server.broadcast "player_#{@game.grandson.cid}",
-        action: 'message',
-        message: "oh no it's grandpa"
-      ActionCable.server.broadcast "player_#{@game.grandson.cid}",
-        action: 'updateStatus',
-        message: "Providing Tech Support"
-
-      ActionCable.server.broadcast "player_#{@game.grandpa.cid}",
-        action: 'message',
-        message: "Your grandson picks up the phone."
-      ActionCable.server.broadcast "player_#{@game.grandpa.cid}",
-        action: 'updateStatus',
-        message: "Receiving Help"
+      @game.start()
     end
   end
-
+  
   def says(data)
     @game.send_message(@user, data)
   end

@@ -1,22 +1,18 @@
 App.connect_to_game = (user_type, user_id)->
-  App.game = App.cable.subscriptions.create "GameChannel",
+  App.cable.subscriptions.create "GameChannel",
     # RESPONSES
     connected: ->
       @perform('register', {type: user_type, id: user_id})
-
-      $('#message-builder').submit(@submit_message)
+      @game = new App.Game(@)
 
     received: (data) ->
       @[data.action](data)
 
     message: (data) ->
-      $('#message-log').append(jQuery('<div></div>').text(data.message))
+      @game.updateLog(data.message)
 
     updateStatus: (data) ->
-      $('#status').text(data.message)
+      @game.updateStatus(data.message)
 
-    # ACTIONS
-    submit_message: (event) =>
-      event.preventDefault()
-      message = [1,2,3]
-      App.game.perform('says', {message: message})
+    populateWordList: (data) ->
+      @game.updateWordList(data.message)

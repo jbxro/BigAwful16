@@ -1,0 +1,16 @@
+both:
+  pronouns:
+    I: []
+    you: []
+    we: []
+    it: []
+    that: []
+    this: []
+    those: []
+    these: []
+grandson:
+  nouns:
+    button: ['depressor']
+grandpa:
+  nouns:
+    button: ['whatchamacallit']

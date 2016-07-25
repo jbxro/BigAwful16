@@ -1,7 +1,10 @@
 class Game < ApplicationRecord
   has_one :grandpa, dependent: :destroy
   has_one :grandson, dependent: :destroy
+  has_one :translator, dependent: :destroy
   has_many :messages
+
+  after_create(:add_translator)
 
   default_scope { order('created_at') } 
 
@@ -49,7 +52,37 @@ class Game < ApplicationRecord
       message: message
   end
 
-  def anti(user)
-    [grandpa, grandson].select{|u| u!=user}
+  def start
+    # Send out word lists
+    ActionCable.server.broadcast "player_#{grandson.cid}",
+      action: 'populateWordList',
+      message: translator.grandson_wordbank
+    ActionCable.server.broadcast "player_#{grandpa.cid}",
+      action: 'populateWordList',
+      message: translator.grandpa_wordbank
+      
+    # Messages to Grandson
+    ActionCable.server.broadcast "player_#{grandson.cid}",
+      action: 'message',
+      message: "The phone rings. You answer it."
+    ActionCable.server.broadcast "player_#{grandson.cid}",
+      action: 'message',
+      message: "oh no it's grandpa"
+    ActionCable.server.broadcast "player_#{grandson.cid}",
+      action: 'updateStatus',
+      message: "Providing Tech Support"
+
+    # Messages to Grandpa
+    ActionCable.server.broadcast "player_#{grandpa.cid}",
+      action: 'message',
+      message: "Your grandson picks up the phone."
+    ActionCable.server.broadcast "player_#{grandpa.cid}",
+      action: 'updateStatus',
+      message: "Receiving Help"
+  end
+
+private
+  def add_translator
+    self.translator = Translator.create
   end
 end
