@@ -5,17 +5,19 @@ class GameChannel < ApplicationCable::Channel
   end
 
   def unsubscribed
-    if(@game.grandpa.nil? || @game.grandson.nil?)
-      @game.destroy
-    elsif(@user.type == 'Grandpa')
-      ActionCable.server.broadcast "game_#{@game.id}",
-        action: 'message',
-        message: "Grandpa has died. The call is over. You are free."
-      @game.destroy
-    elsif(@user.type == 'Grandson')
-      ActionCable.server.broadcast "game_#{@game.id}",
-        action: 'message',
-        message: "Your grandson has left, but your task is still unsolved..."
+    if(@game)
+      if(@game.grandpa.nil? || @game.grandson.nil?)
+        @game.destroy
+      elsif(@user.type == 'Grandpa')
+        ActionCable.server.broadcast "game_#{@game.id}",
+          action: 'message',
+          message: "Grandpa has died. The call is over. You are free."
+        @game.destroy
+      elsif(@user.type == 'Grandson')
+        ActionCable.server.broadcast "game_#{@game.id}",
+          action: 'message',
+          message: "Your grandson has left, but your task is still unsolved..."
+      end
     end
   end
 
@@ -60,6 +62,6 @@ class GameChannel < ApplicationCable::Channel
   end
   
   def says(data)
-    @game.send_message(@user, data)
+    @game.send_message(@user, data['message'])
   end
 end

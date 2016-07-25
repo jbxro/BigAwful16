@@ -1,3 +1,25 @@
 // Place all the styles related to the Games controller here.
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
+
+.family-container{
+  display: block;
+  float: left;
+  width:140px;
+}
+.word{
+  border:1px solid #444499;
+  border-radius:3px;
+  margin-bottom:2px;
+}
+
+#message-block{
+  clear:both;
+  border:1px solid black;
+  border-radius:5px;
+  padding-left:10px;
+  padding-right:10px;
+  max-width:600px;
+}
+#message-builder{
+}

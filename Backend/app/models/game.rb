@@ -46,7 +46,10 @@ class Game < ApplicationRecord
   end
 
   def send_message(user, commands)
-    message = "#{user.type}: Well, I say! I say!"
+    if(commands.empty?)
+      commands = ["Well, I say! I say!"]
+    end
+    message = "#{user.type}: #{commands.join(' ')}"
     ActionCable.server.broadcast "game_#{id}",
       action: "message",
       message: message

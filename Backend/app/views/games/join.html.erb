@@ -1,18 +1,23 @@
-<div>
-  <div>Yay! You joined this game as a <%= @user.type %></div>
-  <div>You are currently: <b><span id='status'></span></b>
-</div>
+<div id='#game'>
+  <div>
+    <div>Yay! You joined this game as a <%= @user.type %></div>
+    <div>You are currently: <b><span id='status'></span></b>
+  </div>
 
-<div id='message-log'>
-</div>
+  <div id='message-log'>
+  </div>
 
-<div id='word-list'>
-  <h4>WORD LIST:</h4>
-</div>
+  <div id='word-list'>
+    <h4>WORD LIST:</h4>
+  </div>
 
-<form id="message-builder">
-  <button>Submit</button>
-</form>
+  <div id='message-block'>
+  </div>
+
+  <form id="message-builder">
+    <button>Submit</button>
+  </form>
+</div>
 
 <%= javascript_tag do %>
   App.connect_to_game('<%=@user.type%>', <%=@user.id%>)

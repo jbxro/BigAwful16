@@ -1,16 +1,21 @@
 both:
   pronouns:
-    I: []
-    you: []
-    we: []
-    it: []
-    that: []
-    this: []
-    those: []
-    these: []
+    'I': []
+    'you': []
+    'we': []
+    'it': []
+    'that': []
+    'this': []
+    'those': []
+    'these': []
+  other:
+    'yes': []
+    'no': []
+    '... uh': []
+    '... I mean': []
 grandson:
   nouns:
-    button: ['depressor']
+    'button': ['depressor']
 grandpa:
   nouns:
-    button: ['whatchamacallit']
+    'button': ['whatchamacallit']
