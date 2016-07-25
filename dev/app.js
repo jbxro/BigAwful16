@@ -3,17 +3,8 @@ window.onload = function(){
 }
 
 function startPhaserApp(gameType, id, data){
+
   var game = new Phaser.Game(1200, 700, Phaser.CANVAS, document.getElementById("main"));
-  WebFontConfig = {
-    //  'active' means all requested fonts have finished loading
-    //  We set a 1 second delay before calling 'createText'.
-    //  For some reason if we don't the browser cannot render the text the first time it's created.
-    active: function() { game.time.events.add(Phaser.Timer.SECOND, createText, this); },
-    //  The Google Fonts we want to load (specify as many as you like in the array)
-    google: {
-      families: ['Roboto']
-    }
-  };
   game.state.add('GrandpaGame', GFG.GrandpaGame);
   game.state.add('GrandsonGame', GFG.GrandsonGame);
   switch (gameType) {
@@ -201,9 +192,6 @@ GFG.GrandsonGame.prototype = {
   },
 
   preload: function(){
-
-    //  Load the Google WebFont Loader script
-    this.game.load.script('webfont', '//ajax.googleapis.com/ajax/libs/webfont/1.4.7/webfont.js');
 
     this.game.load.image('background', 'assets/grandson/bg.png');
     this.game.load.image('port', 'assets/grandson/port.png');
@@ -833,10 +821,29 @@ var Bubble = function(game, parent, type, data, description) {
     this.anchor.setTo(0.1, 1);
   }
 
-  if(type == "device"){
-    this.cable = this.addChild(this.game.make.sprite(-1*(this.getLocalBounds().width * this.anchor.x), -1*(this.getLocalBounds().height * this.anchor.y), 'cableIcons'));
-  } else if(type == "control"){
+  this.zeroX = -1*(this.getLocalBounds().width * this.anchor.x);
+  this.zeroY = -1*(this.getLocalBounds().height * this.anchor.y);
 
+  if(type == "tower"){
+    this.cable = this.addChild(this.game.make.sprite(this.zeroX + this.width/2, this.zeroY + this.height*0.55, 'cableIcons'));
+    this.cable.anchor.setTo(0.5);
+    this.text = this.addChild(this.game.add.text(this.zeroX + this.width/2, this.zeroY + this.height*0.7, "Power cable"));
+    this.text.anchor.setTo(0.5);
+    this.text.fontSize = 20;
+  } else if(type == "monitor"){
+    this.cable1 = this.addChild(this.game.make.sprite(this.zeroX + this.width*0.3, this.zeroY + this.height*0.55, 'cableIcons'));
+    this.cable1.anchor.setTo(0.5);
+    this.text1 = this.addChild(this.game.add.text(this.zeroX + this.width*0.3, this.zeroY + this.height*0.7, "Power cable"));
+    this.text1.anchor.setTo(0.5);
+    this.text1.fontSize = 20;
+    this.cable2 = this.addChild(this.game.make.sprite(this.zeroX + this.width*0.7, this.zeroY + this.height*0.55, 'cableIcons'));
+    this.cable2.anchor.setTo(0.5);
+    this.text2 = this.addChild(this.game.add.text(this.zeroX + this.width*0.7, this.zeroY + this.height*0.7, "Data cable"));
+    this.text2.anchor.setTo(0.5);
+    this.text2.fontSize = 20;
+  } else if(type == "control"){
+    this.text = this.game.add.text(this.game.world.centerX, this.game.world.centerY, "TEST");
+      this.text.fontSize = 30;
   }
 
   this.destroySelf = function(){
@@ -860,12 +867,11 @@ var SmallMonitor = function(conflux, game, x, y, group, data) {
 
   this.addBubble = function(){
     if(!this.displayingHelp){
-      var bubble = new Bubble(this.game, this, "device", "", "");
+      var bubble = new Bubble(this.game, this, "monitor", "", "");
       this.displayingHelp = true;
     }
   }
   this.events.onInputDown.add(this.addBubble, this);
-
 }
 SmallMonitor.prototype = Object.create(Phaser.Sprite.prototype);
 SmallMonitor.prototype.constructor = SmallMonitor;
@@ -881,7 +887,7 @@ var SmallTower = function(conflux, game, x, y, group, data) {
 
   this.addBubble = function(){
     if(!this.displayingHelp){
-      var bubble = new Bubble(this.game, this, "device", "", "");
+      var bubble = new Bubble(this.game, this, "tower", "", "");
       this.displayingHelp = true;
     }
   }
@@ -890,12 +896,15 @@ var SmallTower = function(conflux, game, x, y, group, data) {
 SmallTower.prototype = Object.create(Phaser.Sprite.prototype);
 SmallTower.prototype.constructor = SmallTower;
 
-var Element = function(conflux, game, x, y, group, key, description) {
+var Element = function(conflux, game, x, y, group, key, frame, description) {
   if(typeof group === 'undefined'){ group = game.world; }
   Phaser.Sprite.call(this, game, x, y, key);
   group.add(this);
+  this.description = description;
+  this.frame = frame;
   this.inputEnabled = true;
   this.displayingHelp = false;
+
 }
 Element.prototype = Object.create(Phaser.Sprite.prototype);
 Element.prototype.constructor = Element;
