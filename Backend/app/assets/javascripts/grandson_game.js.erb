@@ -80,6 +80,12 @@ GameClient.GFG.GrandsonGame.prototype = {
     "Washing machine interface"
   ],
 
+  buttonDescriptions: [
+    "DUmMY 1",
+    "DUMMY 2",
+    "DUMMY 3"
+  ],
+
   init: function(inputData) {
     this.data = inputData;
   },
@@ -100,6 +106,7 @@ GameClient.GFG.GrandsonGame.prototype = {
   create: function(){
 
     this.background = this.game.add.sprite(0, 0, 'background');
+    this.game.labels = this.game.add.group();
 
     this.monitors = this.game.add.group();
     for(var i=0;i<this.data.monitors.length;i++){
@@ -111,6 +118,8 @@ GameClient.GFG.GrandsonGame.prototype = {
       var coords = this.towerCoordinates[i];
       var monitor = new GameClient.SmallTower(this, this.game, coords[0], coords[1], this.towers, this.data.towers[i]);
     }
+
+    this.game.world.bringToTop(this.game.labels);
 
   },
 

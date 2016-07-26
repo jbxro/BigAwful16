@@ -25,13 +25,30 @@ GameClient.SmallTower = function(conflux, game, x, y, group, data) {
 
   for(var i=0;i<conflux.switchCoordinates.length;i++){
     var coords = conflux.switchCoordinates[i];
-    var aSwitch = new GameClient.Element(conflux, game, coords[0], coords[1], game.world, 'switch', game.rnd.integerInRange(0, 1), "switch\nswitch\nswitch");
+    if(i == 0){
+      var desc = "Power Switch\nOn: " + data.towerSwitches.powerOn;
+    } else if (i == 1){
+      var desc = "Monitor Compatibility\nXVD: " + data.towerSwitches.monitorXVD;
+    }
+    var aSwitch = new GameClient.Element(conflux, game, coords[0], coords[1], game.world, 'switch', game.rnd.integerInRange(0, 1), desc);
     this.addChild(aSwitch);
+  }
+
+  for(var i=0;i<4;i++){
+    var coords = conflux.portCoordinates[i];
+    var button = this.addChild(this.game.make.sprite(coords[0], coords[1], 'squareButtons'));
+    if(i == data.towerPort){
+      var desc = "Display Port"
+    } else {
+      var desc = conflux.portDescriptions[this.game.rnd.integerInRange(0, conflux.portDescriptions.length-1)];
+    }
+    var port = new GameClient.Element(conflux, game, coords[0], coords[1], game.world, 'port', 0, desc);
+    this.addChild(port);
   }
 
   this.addBubble = function(){
     if(!this.displayingHelp){
-      var bubble = new GameClient.Bubble(this.game, this, "tower", "", "");
+      var bubble = new GameClient.Bubble(this.game, this, "tower", data, "");
       this.displayingHelp = true;
     }
   }

@@ -6,7 +6,7 @@ class Game < ApplicationRecord
 
   after_create(:add_translator)
 
-  default_scope { order('created_at') } 
+  default_scope { order('created_at') }
 
   def self.needs_grandpas
     Game.all.select{|g| g.grandpa.nil? && g.grandson.present?}
@@ -63,7 +63,7 @@ class Game < ApplicationRecord
     ActionCable.server.broadcast "player_#{grandpa.cid}",
       action: 'populateWordList',
       message: translator.grandpa_wordbank
-      
+
     # Messages to Grandson
     ActionCable.server.broadcast "player_#{grandson.cid}",
       action: 'message',
@@ -107,29 +107,29 @@ class Game < ApplicationRecord
         },
 
         {
-          "name": "SCL-50EX",
+          "name": "AFG121",
           "logo": 2,
           "type": "SGA",
-          "monitorButtons": [0,0,1,0,0,0,2,0,0,0,4,3],
-          "monitorCables": {"power": "blue", "data": "red"},
+          "monitorButtons": [0,2,0,0,0,0,0,0,0,1,4,3],
+          "monitorCables": {"power": "green", "data": "purple"},
           "monitorInput": 2
         },
 
         {
-          "name": "SCL-50EX",
+          "name": "WMM59T",
           "logo": 2,
           "type": "SGA",
-          "monitorButtons": [0,0,1,0,0,0,2,0,0,0,4,3],
-          "monitorCables": {"power": "blue", "data": "red"},
+          "monitorButtons": [0,0,1,4,0,0,2,3,0,0,4,0],
+          "monitorCables": {"power": "red", "data": "blue"},
           "monitorInput": 2
         }
       ],
 
       "towers": [ # array of possible towers
         {
-          "name": "Grinder XT",
+          "name": "Super-1",
           "logo": 3,
-          "towerPort": 2, # correct port to connect monitor - randomize 0 - 3
+          "towerPort": 0, # correct port to connect monitor - randomize 0 - 3
           "towerCable": "green",
           "roundButtons": [1,0], # randomize 0 - 2
           "squareButtons": [2,2], # randomize 0 - 2
@@ -140,19 +140,19 @@ class Game < ApplicationRecord
           "name": "Grinder XT",
           "logo": 3,
           "towerPort": 2,
-          "towerCable": "green",
+          "towerCable": "red",
           "roundButtons": [1,2],
           "squareButtons": [1,2],
           "towerSwitches": {"powerOn": "left", "monitorXVD": "right"}
         },
 
         {
-          "name": "Grinder XT",
+          "name": "Mesa Supreme",
           "logo": 3,
-          "towerPort": 2,
-          "towerCable": "green",
-          "roundButtons": [1,2],
-          "squareButtons": [1,2],
+          "towerPort": 1,
+          "towerCable": "purple",
+          "roundButtons": [2,1],
+          "squareButtons": [1,0],
           "towerSwitches": {"powerOn": "left", "monitorXVD": "right"}
         }
 
