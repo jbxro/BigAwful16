@@ -1,0 +1,128 @@
+GameClient.GFG.GrandsonGame = function(game){};
+GameClient.GFG.GrandsonGame.prototype = {
+  // Settings
+  // State variables
+  colors: {
+    "blue": 0,
+    "yellow": 1,
+    "green": 2,
+    "red": 3,
+    "purple": 4
+  },
+
+  switchState: {
+    "left": false,
+    "right": true
+  },
+
+  switchCoordinates: [
+    [35, 160],
+    [35, 210]
+  ],
+
+  buttonCoordinates: [
+    [6, 20],
+    [6, 40],
+    [6, 60],
+    [252, 20],
+    [252, 40],
+    [252, 60],
+    [25, 204],
+    [50, 204],
+    [75, 204],
+    [185, 204],
+    [205, 204],
+    [230, 204]
+  ],
+
+  dummyRoundButtonsCoordinates: [
+    [19, 133],
+    [42, 133]
+  ],
+
+  dummySquareButtonsCoordinates: [
+    [12, 12],
+    [32, 12]
+  ],
+
+  portCoordinates: [
+    [83, 55],
+    [83, 81],
+    [83, 107],
+    [83, 133],
+  ],
+
+  monitorCoordinates: [
+    [95, 106],
+    [462, 106],
+    [830, 106]
+  ],
+
+  towerCoordinates: [
+    [165, 407],
+    [533, 407],
+    [900, 407]
+  ],
+
+  portDescriptions: [
+    "Coaxial Port",
+    "WiFi Port",
+    "Laser Communication Port",
+    "Cellular Network Bus",
+    "IBS Port",
+    "GBS Port",
+    "PDA Port",
+    "YOSPOS Interface Connector",
+    "NOTIM Port (ED variety)",
+    "NOTIM Port (ANT variety)",
+    "Over/Under Port",
+    "VR Port",
+    "Washing machine interface"
+  ],
+
+  init: function(inputData) {
+    this.data = inputData;
+  },
+
+  preload: function(){
+
+    //  Load the Google WebFont Loader script
+    this.game.load.script('webfont', '//ajax.googleapis.com/ajax/libs/webfont/1.4.7/webfont.js');
+
+    this.game.load.image('background', "<%= asset_path 'grandson/bg.png'%>");
+    this.game.load.image('port', "<%= asset_path 'grandson/port.png'%>");
+    this.game.load.image('monitor', "<%= asset_path 'grandson/monitor.png'%>");
+    this.game.load.image('tower', "<%= asset_path 'grandson/tower.png'%>");
+    this.game.load.spritesheet('roundButtons', "<%= asset_path 'grandson/roundButtons.png'%>", 16, 16);
+    this.game.load.spritesheet('squareButtons', "<%= asset_path 'grandson/squareButtons.png'%>", 16, 6);
+    this.game.load.spritesheet('cableIcons', "<%= asset_path 'grandson/cable_icons.png'%>", 35, 53);
+    this.game.load.spritesheet('switch', "<%= asset_path 'grandson/switch.png'%>", 40, 35);
+    this.game.load.spritesheet('bubble', "<%= asset_path 'grandson/bubble.png'%>", 343, 289);
+
+  },
+
+  create: function(){
+
+    this.background = this.game.add.sprite(0, 0, 'background');
+
+    this.monitors = this.game.add.group();
+    for(var i=0;i<this.data.monitors.length;i++){
+      var coords = this.monitorCoordinates[i];
+      var monitor = new GameClient.SmallMonitor(this, this.game, coords[0], coords[1], this.monitors, this.data.monitors[i]);
+    }
+    this.towers = this.game.add.group();
+    for(var i=0;i<this.data.monitors.length;i++){
+      var coords = this.towerCoordinates[i];
+      var monitor = new GameClient.SmallTower(this, this.game, coords[0], coords[1], this.towers, this.data.towers[i]);
+    }
+
+  },
+
+  update: function(){
+
+  },
+
+  render: function(){
+
+  }
+}

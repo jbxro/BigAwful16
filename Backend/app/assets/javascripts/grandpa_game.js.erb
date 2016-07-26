@@ -1,0 +1,288 @@
+GameClient.GFG.GrandpaGame = function(game){};
+GameClient.GFG.GrandpaGame.prototype = {
+    // Settings
+    // State variables
+    switchCoordinates: [
+      [950, 370],
+      [950, 465]
+    ],
+
+    buttonCoordinates: [
+      [225, 100],
+      [225, 140],
+      [225, 180],
+      [720, 100],
+      [720, 140],
+      [720, 180],
+      [265, 465],
+      [305, 465],
+      [345, 465],
+      [670, 465],
+      [630, 465],
+      [590, 465]
+    ],
+
+    dummyRoundButtonsCoordinates: [
+      [920, 325],
+      [965, 325]
+    ],
+
+    dummySquareButtonsCoordinates: [
+      [905, 85],
+      [945, 85]
+    ],
+
+    colors: {
+      "blue": 0,
+      "yellow": 1,
+      "green": 2,
+      "red": 3,
+      "purple": 4
+    },
+
+    switchState: {
+      "left": false,
+      "right": true
+    },
+
+    init: function(inputData) {
+      this.data = inputData;
+     },
+
+    preload: function() {
+      this.game.load.image('background', "<%= asset_path 'grandpa/bg.png'%>");
+      this.game.load.image('port', "<%= asset_path 'grandpa/port.png'%>)");
+      this.game.load.image('panel', "<%= asset_path 'grandpa/panel.png'%>)");
+      this.game.load.image('socket', "<%= asset_path 'grandpa/socket.png'%>)");
+      this.game.load.image('frustrationBar', "<%= asset_path 'grandpa/barInside.png'%>)");
+      this.game.load.spritesheet('roundButtons', "<%= asset_path 'grandpa/buttons1.png'%>), 32, 32");
+      this.game.load.spritesheet('squareButtons', "<%= asset_path 'grandpa/buttons2.png'%>), 31, 13");
+      this.game.load.spritesheet('cableIcons', "<%= asset_path 'grandpa/cable_icons.png'%>), 69, 105");
+      this.game.load.spritesheet('cablesPluggedOutlet', "<%= asset_path 'grandpa/cables_plugged_outlet.png'%>), 76, 466");
+      this.game.load.spritesheet('cablesPluggedPort', "<%= asset_path 'grandpa/cables_plugged_port.png'%>), 70, 419");
+      this.game.load.spritesheet('cablesFloating', "<%= asset_path 'grandpa/cables.png'%>), 100, 979");
+      this.game.load.spritesheet('switch', "<%= asset_path 'grandpa/switch.png'%>), 80, 68");
+      this.game.load.spritesheet('signs', "<%= asset_path 'grandpa/signs.png'%>), 160, 80");
+      this.game.load.spritesheet('screen', "<%= asset_path 'grandpa/screen.png'%>), 412, 336");
+      this.game.load.spritesheet('frustrationBarWrapper', "<%= asset_path 'grandpa/barWrapper.png'%>), 476, 78");
+    },
+
+    create: function() {
+
+      this.grandpasMonitor = this.data.monitors[this.data.grandpasHardware.monitor];
+      this.grandpasTower = this.data.towers[data.grandpasHardware.tower];
+
+      this.game.camera.bounds = null;
+
+      this.frustration = 0;
+      this.frustrationRate = 1;
+      this.game.time.events.loop(5 * Phaser.Timer.SECOND, this.addFrustration, this);
+
+      this.monitor = new Monitor(this, this.game, 279, 113, this.game.world, this.grandpasMonitor.monitorButtons, this.grandpasMonitor.monitorInput);
+      this.monitor.generateLayout();
+
+      this.tower = new Tower(this, this.game, this.grandpasTower);
+
+      this.background = this.game.add.sprite(0,0,'background');
+      this.game.world.bringToTop(this.monitor.buttons);
+
+      this.dummyButtons = this.game.add.group();
+      for(var i=0;i<this.grandpasTower.roundButtons.length;i++){
+        if(this.grandpasTower.roundButtons[i] != 0) {
+          var butt = new DummyButton(this, this.game, this.dummyRoundButtonsCoordinates[i][0], this.dummyRoundButtonsCoordinates[i][1], this.dummyButtons, 'roundButtons', this.grandpasTower.roundButtons[i]);
+        }
+      }
+      for(var i=0;i<this.grandpasTower.squareButtons.length;i++){
+        if(this.grandpasTower.squareButtons[i] != 0) {
+          var butt = new DummyButton(this, this.game, this.dummySquareButtonsCoordinates[i][0], this.dummySquareButtonsCoordinates[i][1], this.dummyButtons, 'squareButtons', this.grandpasTower.squareButtons[i]);
+        }
+      }
+
+      this.ports = this.game.add.group();
+      this.sockets = this.game.add.group();
+      for(var i=0;i<4;i++){
+        var port = new Port(this, this.game, 1045, 324 - (i * 52), this.ports);
+      }
+      for(var i=0;i<2;i++){
+        var socket = new Socket(this, this.game, 781, 424 - (i * 78), this.sockets);
+      }
+
+      this.ports.forEach(function(item){
+        item.inputEnabled = true;
+        item.events.onInputDown.add(function(){
+          if(item.pluggedCable.visible){
+            var index = item.pluggedCable.frame;
+            var proceed = true;
+            for(var i=0;i<this.floatingCables.children.length;i++){
+              if(this.floatingCables.children[i].active) proceed = false;
+            }
+            if(proceed){
+              this.floatingCables.children[index].toggleDrag();
+              item.pluggedCable.visible =! item.pluggedCable.visible;
+            }
+          } else {
+            for(var i=0;i<this.floatingCables.children.length;i++){
+              if(this.floatingCables.children[i].active){
+                this.floatingCables.children[i].toggleDrag();
+                item.pluggedCable.visible =! item.pluggedCable.visible;
+                item.pluggedCable.frame = i;
+              }
+            }
+          }
+        }, this);
+      }, this);
+
+      this.sockets.forEach(function(item){
+        item.inputEnabled = true;
+        item.events.onInputDown.add(function(){
+          if(item.pluggedCable.visible){
+            var index = item.pluggedCable.frame;
+            var proceed = true;
+            for(var i=0;i<this.floatingCables.children.length;i++){
+              if(this.floatingCables.children[i].active) proceed = false;
+            }
+            if(proceed){
+              this.floatingCables.children[index].toggleDrag();
+              item.pluggedCable.visible =! item.pluggedCable.visible;
+            }
+          } else {
+            for(var i=0;i<this.floatingCables.children.length;i++){
+              if(this.floatingCables.children[i].active){
+                this.floatingCables.children[i].toggleDrag();
+                item.pluggedCable.visible =! item.pluggedCable.visible;
+                item.pluggedCable.frame = i;
+              }
+            }
+          }
+        }, this);
+      }, this);
+
+      this.switches = this.game.add.group();
+      for(var i=0;i<this.switchCoordinates.length;i++){
+        var aSwitch = new Switch(this, this.game, this.switchCoordinates[i][0], this.switchCoordinates[i][1], this.switches);
+      }
+
+      this.panel = this.game.add.sprite(750, 550, 'panel');
+
+      this.barInside = this.game.add.sprite(655, 635, 'frustrationBar');
+      this.barInsideWidth = this.barInside.width;
+      this.barCropRect = new Phaser.Rectangle(0,0,0,this.barInside.height);
+      this.barInside.crop(this.barCropRect);
+      this.barWrapper = this.game.add.sprite(650, 600, 'frustrationBarWrapper');
+
+      this.floatingCables = this.game.add.group();
+      for(var i=0;i<5;i++){
+        var cable = new Cable(this, this.game, 0, 0 + (i * 100), this.floatingCables, i);
+      }
+
+      this.cableIcons = this.game.add.group();
+      for(var i=0;i<5;i++){
+        this.cableIcons.create(40 + (i * 90), 580, 'cableIcons');
+        this.cableIcons.children[i].frame = i;
+        this.cableIcons.children[i].inputEnabled = true;
+      }
+
+      this.cableIcons.forEach(function(item){
+        var index = this.cableIcons.children.indexOf(item);
+        item.events.onInputDown.add(function(){
+          var plugged;
+          for (var i=0;i<this.ports.children.length;i++){
+            if(this.ports.children[i].pluggedCable.visible && this.ports.children[i].pluggedCable.frame == index) plugged = true;
+          }
+          for (var i=0;i<this.sockets.children.length;i++){
+            if(this.sockets.children[i].pluggedCable.visible && this.sockets.children[i].pluggedCable.frame == index) plugged = true;
+          }
+          if(!plugged){
+            var proceed = true;
+            for (var i=0;i<this.floatingCables.children.length;i++){
+              if(this.floatingCables.children[i].active){
+                this.cableIcons.children[i].alpha = 1;
+                this.floatingCables.children[i].toggleDrag();
+                if(index == i){
+                  proceed = false;
+                }
+              }
+            }
+            if(proceed){
+              this.cableIcons.children[index].alpha = 0.25;
+              this.floatingCables.children[index].toggleDrag();
+            }
+          }
+        }, this);
+      }, this);
+    },
+
+    update: function() {
+      this.barInside.updateCrop();
+      this.monitor.pluggedIn = false;
+      this.sockets.forEach(function(item){
+        if(item.pluggedCable.visible && (item.pluggedCable.frame == this.colors[this.grandpasMonitor.monitorCables.power])){
+          this.monitor.pluggedIn = true;
+        }
+      }, this);
+
+      this.monitor.connected = false;
+      this.ports.forEach(function(item){
+        var index = this.ports.children.indexOf(item);
+        if(item.pluggedCable.visible && (item.pluggedCable.frame == this.colors[this.grandpasMonitor.monitorCables.data]) && (index == this.grandpasTower.towerPort)){
+          this.monitor.connected = true;
+        }
+      }, this);
+
+      this.tower.pluggedIn = false;
+      this.tower.powerOn = false;
+      this.tower.sendingData = false;
+      this.sockets.forEach(function(item){
+        if(item.pluggedCable.visible && (item.pluggedCable.frame == this.colors[this.grandpasTower.towerCable])){
+          this.tower.pluggedIn = true;
+        }
+      }, this);
+
+      if(this.tower.pluggedIn){
+        this.tower.powerOn = (this.switches.children[0].state == this.tower.powerOnSetting) ? true : false;
+      }
+
+      if(this.tower.powerOn){
+        this.tower.sendingData = (this.switches.children[1].state == this.tower.monitorSetting) ? true : false;
+      }
+    },
+
+    render: function() {
+      if(this.frustration >= 50){
+        this.game.camera.x = this.game.rnd.integerInRange(-1*((this.frustration-50)/5), (this.frustration-50)/10);
+        this.game.camera.y = this.game.rnd.integerInRange(-1*((this.frustration-50)/5), (this.frustration-50)/10);
+      }
+    },
+
+    addFrustration: function(amount) {
+      this.updateFrustrationRate();
+      if (typeof amount === 'undefined'){
+        amount = this.frustrationRate;
+      }
+      if (this.frustration <= 100) {
+        this.frustration += amount;
+        if (this.frustration > 100){
+          this.frustration = 100;
+        }
+        if (this.frustration < 0){
+          this.frustration = 0;
+        }
+      }
+      var tween = this.game.add.tween(this.barCropRect).to( { width: (this.frustration/100)*this.barInsideWidth }, 100, "Linear", true);
+      tween.start();
+      this.frustration >= 80 ? this.barWrapper.frame=1 : this.barWrapper.frame=0;
+    },
+
+    updateFrustrationRate: function() {
+      var r = 0;
+      this.monitor.pluggedIn ? r-- : r++;
+      this.monitor.powerOn ? r-- : r++;
+      this.monitor.connected ? r-- : r++;
+      this.tower.pluggedIn ? r-- : r++;
+      this.tower.powerOn ? r-- : r++;
+      (this.monitor.input == this.monitor.correctInput) ? r-- : r++;
+      this.frustrationRate = r;
+    }
+  }
+
+
