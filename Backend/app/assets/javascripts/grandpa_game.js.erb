@@ -51,26 +51,25 @@ GameClient.GFG.GrandpaGame.prototype = {
 
     preload: function() {
       this.game.load.image('background', "<%= asset_path 'grandpa/bg.png'%>");
-      this.game.load.image('port', "<%= asset_path 'grandpa/port.png'%>)");
-      this.game.load.image('panel', "<%= asset_path 'grandpa/panel.png'%>)");
-      this.game.load.image('socket', "<%= asset_path 'grandpa/socket.png'%>)");
-      this.game.load.image('frustrationBar', "<%= asset_path 'grandpa/barInside.png'%>)");
-      this.game.load.spritesheet('roundButtons', "<%= asset_path 'grandpa/buttons1.png'%>), 32, 32");
-      this.game.load.spritesheet('squareButtons', "<%= asset_path 'grandpa/buttons2.png'%>), 31, 13");
-      this.game.load.spritesheet('cableIcons', "<%= asset_path 'grandpa/cable_icons.png'%>), 69, 105");
-      this.game.load.spritesheet('cablesPluggedOutlet', "<%= asset_path 'grandpa/cables_plugged_outlet.png'%>), 76, 466");
-      this.game.load.spritesheet('cablesPluggedPort', "<%= asset_path 'grandpa/cables_plugged_port.png'%>), 70, 419");
-      this.game.load.spritesheet('cablesFloating', "<%= asset_path 'grandpa/cables.png'%>), 100, 979");
-      this.game.load.spritesheet('switch', "<%= asset_path 'grandpa/switch.png'%>), 80, 68");
-      this.game.load.spritesheet('signs', "<%= asset_path 'grandpa/signs.png'%>), 160, 80");
-      this.game.load.spritesheet('screen', "<%= asset_path 'grandpa/screen.png'%>), 412, 336");
-      this.game.load.spritesheet('frustrationBarWrapper', "<%= asset_path 'grandpa/barWrapper.png'%>), 476, 78");
+      this.game.load.image('port', "<%= asset_path 'grandpa/port.png'%>");
+      this.game.load.image('panel', "<%= asset_path 'grandpa/panel.png'%>");
+      this.game.load.image('socket', "<%= asset_path 'grandpa/socket.png'%>");
+      this.game.load.image('frustrationBar', "<%= asset_path 'grandpa/barInside.png'%>");
+      this.game.load.spritesheet('roundButtons', "<%= asset_path 'grandpa/buttons1.png'%>", 32, 32);
+      this.game.load.spritesheet('squareButtons', "<%= asset_path 'grandpa/buttons2.png'%>", 31, 13);
+      this.game.load.spritesheet('cableIcons', "<%= asset_path 'grandpa/cable_icons.png'%>", 69, 105);
+      this.game.load.spritesheet('cablesPluggedOutlet', "<%= asset_path 'grandpa/cables_plugged_outlet.png'%>", 76, 466);
+      this.game.load.spritesheet('cablesPluggedPort', "<%= asset_path 'grandpa/cables_plugged_port.png'%>", 70, 419);
+      this.game.load.spritesheet('cablesFloating', "<%= asset_path 'grandpa/cables.png'%>", 100, 979);
+      this.game.load.spritesheet('switch', "<%= asset_path 'grandpa/switch.png'%>", 80, 68);
+      this.game.load.spritesheet('signs', "<%= asset_path 'grandpa/signs.png'%>", 160, 80);
+      this.game.load.spritesheet('screen', "<%= asset_path 'grandpa/screen.png'%>", 412, 336);
+      this.game.load.spritesheet('frustrationBarWrapper', "<%= asset_path 'grandpa/barWrapper.png'%>", 476, 78);
     },
 
     create: function() {
-
       this.grandpasMonitor = this.data.monitors[this.data.grandpasHardware.monitor];
-      this.grandpasTower = this.data.towers[data.grandpasHardware.tower];
+      this.grandpasTower = this.data.towers[this.data.grandpasHardware.tower];
 
       this.game.camera.bounds = null;
 
@@ -78,10 +77,10 @@ GameClient.GFG.GrandpaGame.prototype = {
       this.frustrationRate = 1;
       this.game.time.events.loop(5 * Phaser.Timer.SECOND, this.addFrustration, this);
 
-      this.monitor = new Monitor(this, this.game, 279, 113, this.game.world, this.grandpasMonitor.monitorButtons, this.grandpasMonitor.monitorInput);
+      this.monitor = new GameClient.Monitor(this, this.game, 279, 113, this.game.world, this.grandpasMonitor.monitorButtons, this.grandpasMonitor.monitorInput);
       this.monitor.generateLayout();
 
-      this.tower = new Tower(this, this.game, this.grandpasTower);
+      this.tower = new GameClient.Tower(this, this.game, this.grandpasTower);
 
       this.background = this.game.add.sprite(0,0,'background');
       this.game.world.bringToTop(this.monitor.buttons);
@@ -89,22 +88,22 @@ GameClient.GFG.GrandpaGame.prototype = {
       this.dummyButtons = this.game.add.group();
       for(var i=0;i<this.grandpasTower.roundButtons.length;i++){
         if(this.grandpasTower.roundButtons[i] != 0) {
-          var butt = new DummyButton(this, this.game, this.dummyRoundButtonsCoordinates[i][0], this.dummyRoundButtonsCoordinates[i][1], this.dummyButtons, 'roundButtons', this.grandpasTower.roundButtons[i]);
+          var butt = new GameClient.DummyButton(this, this.game, this.dummyRoundButtonsCoordinates[i][0], this.dummyRoundButtonsCoordinates[i][1], this.dummyButtons, 'roundButtons', this.grandpasTower.roundButtons[i]);
         }
       }
       for(var i=0;i<this.grandpasTower.squareButtons.length;i++){
         if(this.grandpasTower.squareButtons[i] != 0) {
-          var butt = new DummyButton(this, this.game, this.dummySquareButtonsCoordinates[i][0], this.dummySquareButtonsCoordinates[i][1], this.dummyButtons, 'squareButtons', this.grandpasTower.squareButtons[i]);
+          var butt = new GameClient.DummyButton(this, this.game, this.dummySquareButtonsCoordinates[i][0], this.dummySquareButtonsCoordinates[i][1], this.dummyButtons, 'squareButtons', this.grandpasTower.squareButtons[i]);
         }
       }
 
       this.ports = this.game.add.group();
       this.sockets = this.game.add.group();
       for(var i=0;i<4;i++){
-        var port = new Port(this, this.game, 1045, 324 - (i * 52), this.ports);
+        var port = new GameClient.Port(this, this.game, 1045, 324 - (i * 52), this.ports);
       }
       for(var i=0;i<2;i++){
-        var socket = new Socket(this, this.game, 781, 424 - (i * 78), this.sockets);
+        var socket = new GameClient.Socket(this, this.game, 781, 424 - (i * 78), this.sockets);
       }
 
       this.ports.forEach(function(item){
@@ -159,7 +158,7 @@ GameClient.GFG.GrandpaGame.prototype = {
 
       this.switches = this.game.add.group();
       for(var i=0;i<this.switchCoordinates.length;i++){
-        var aSwitch = new Switch(this, this.game, this.switchCoordinates[i][0], this.switchCoordinates[i][1], this.switches);
+        var aSwitch = new GameClient.Switch(this, this.game, this.switchCoordinates[i][0], this.switchCoordinates[i][1], this.switches);
       }
 
       this.panel = this.game.add.sprite(750, 550, 'panel');
@@ -172,7 +171,7 @@ GameClient.GFG.GrandpaGame.prototype = {
 
       this.floatingCables = this.game.add.group();
       for(var i=0;i<5;i++){
-        var cable = new Cable(this, this.game, 0, 0 + (i * 100), this.floatingCables, i);
+        var cable = new GameClient.Cable(this, this.game, 0, 0 + (i * 100), this.floatingCables, i);
       }
 
       this.cableIcons = this.game.add.group();

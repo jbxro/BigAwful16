@@ -3,6 +3,7 @@ App.connect_to_game = (user_type, user_id)->
     # RESPONSES
     connected: ->
       @perform('register', {type: user_type, id: user_id})
+      GameClient.start(user_type, 0, GameClient.data);
       @game = new App.Game(@)
 
     received: (data) ->

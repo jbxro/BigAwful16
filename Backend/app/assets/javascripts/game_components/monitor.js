@@ -30,7 +30,7 @@ GameClient.Monitor = function(conflux, game, x, y, group, buttons, correctInput)
   }
 
   this.createButton = function(type, buttonX, buttonY) {
-    var button = new Button(this, game, buttonX, buttonY, this.buttons, this, type);
+    var button = new GameClient.Button(this, game, buttonX, buttonY, this.buttons, this, type);
   }
 
   this.togglePower = function(){

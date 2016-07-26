@@ -4,10 +4,10 @@ GameClient = {
     game.state.add('GrandpaGame', GameClient.GFG.GrandpaGame);
     game.state.add('GrandsonGame', GameClient.GFG.GrandsonGame);
     switch (gameType) {
-      case 'grandpa':
+      case 'Grandpa':
         game.state.start('GrandpaGame', false, true, data);
         break;
-      case 'grandson':
+      case 'Grandson':
         game.state.start('GrandsonGame', false, true, data);
         break;
       default:

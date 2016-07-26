@@ -10,7 +10,6 @@ App.Game = class Game
     @wordListElement = $('#word-list')
     @messageBlockElement = $('#message-block')
     $('#message-builder').submit(@submitMessage)
-    GameClient.start("grandson", 0, GameClient.data);
 
   submitMessage: (event) =>
     event.preventDefault()

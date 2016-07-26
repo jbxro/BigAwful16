@@ -9,7 +9,7 @@ GameClient.SmallMonitor = function(conflux, game, x, y, group, data) {
 
   this.addBubble = function(){
     if(!this.displayingHelp){
-      var bubble = new Bubble(this.game, this, "monitor", "", "");
+      var bubble = new GameClient.Bubble(this.game, this, "monitor", "", "");
       this.displayingHelp = true;
     }
   }
