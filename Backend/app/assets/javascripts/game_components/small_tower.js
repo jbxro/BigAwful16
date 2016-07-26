@@ -9,7 +9,7 @@ GameClient.SmallTower = function(conflux, game, x, y, group, data) {
 
   this.addBubble = function(){
     if(!this.displayingHelp){
-      var bubble = new Bubble(this.game, this, "device", "", "");
+      var bubble = new Bubble(this.game, this, "tower", "", "");
       this.displayingHelp = true;
     }
   }
