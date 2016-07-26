@@ -4,11 +4,17 @@ GameClient.Bubble = function(game, parent, type, data, description) {
   this.game.world.add(this);
   this.inputEnabled = true;
 
-  this.x = this.parentSprite.x + (0.5*this.parentSprite.width);
-  this.y = this.parentSprite.y + (0.5*this.parentSprite.height);
+  if(type == "control"){
+    this.x = 0.5*this.parentSprite.width;
+    this.y = 0.5*this.parentSprite.height;
+    this.parentSprite.addChild(this);
+  } else {
+    this.x = this.parentSprite.x + (0.5*this.parentSprite.width);
+    this.y = this.parentSprite.y + (0.5*this.parentSprite.height);
+  }
 
-  var left = this.x < 0.5*game.width;
-  var top = this.y < 0.5*game.height;
+  var left = this.parentSprite.world.x < 0.5*game.width;
+  var top = this.parentSprite.world.y < 0.5*game.height;
 
   if (!left && top) {
     this.frame = 0;
@@ -45,8 +51,9 @@ GameClient.Bubble = function(game, parent, type, data, description) {
     this.text2.anchor.setTo(0.5);
     this.text2.fontSize = 20;
   } else if(type == "control"){
-    this.text = this.game.add.text(this.game.world.centerX, this.game.world.centerY, "TEST");
-    this.text.fontSize = 30;
+    this.text = this.addChild(this.game.add.text(this.zeroX + this.width*0.5, this.zeroY + this.height*0.5, description));
+    this.text.anchor.setTo(0.5);
+    this.text.fontSize = 25;
   }
 
   this.destroySelf = function(){

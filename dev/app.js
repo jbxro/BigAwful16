@@ -1,7 +1,3 @@
-window.onload = function(){
-  startPhaserApp("grandson", 0, data);
-}
-
 function startPhaserApp(gameType, id, data){
 
   var game = new Phaser.Game(1200, 700, Phaser.CANVAS, document.getElementById("main"));
@@ -83,7 +79,7 @@ var data = {
     "logo": 3,
     "towerPort": 2,
     "towerCable": "green",
-    "roundButtons": [1,2],
+    "roundButtons": [0,2],
     "squareButtons": [1,2],
     "towerSwitches": {"powerOn": "left", "monitorXVD": "right"}
   },
@@ -795,14 +791,23 @@ var Switch = function(conflux, game, x, y, group) {
 Switch.prototype = Object.create(Phaser.Sprite.prototype);
 Switch.prototype.constructor = Switch;
 
-var Bubble = function(game, parent, type, data, description) {
-  this.parentSprite = parent;
+var Bubble = function(game, parentSprite, type, data, description) {
+  this.parentSprite = parentSprite;
   Phaser.Sprite.call(this, game, 0, 0, 'bubble');
   this.game.world.add(this);
   this.inputEnabled = true;
 
-  this.x = this.parentSprite.x + (0.5*this.parentSprite.width);
-  this.y = this.parentSprite.y + (0.5*this.parentSprite.height);
+  if(type == "control"){
+    this.x = 0.5*this.parentSprite.width;
+    this.y = 0.5*this.parentSprite.height;
+    this.parentSprite.addChild(this);
+  } else {
+    this.x = this.parentSprite.x + (0.5*this.parentSprite.width);
+    this.y = this.parentSprite.y + (0.5*this.parentSprite.height);
+  }
+
+  console.log(this.world.x);
+  console.log(this.world.y);
 
   var left = this.x < 0.5*game.width;
   var top = this.y < 0.5*game.height;
@@ -842,8 +847,9 @@ var Bubble = function(game, parent, type, data, description) {
     this.text2.anchor.setTo(0.5);
     this.text2.fontSize = 20;
   } else if(type == "control"){
-    this.text = this.game.add.text(this.game.world.centerX, this.game.world.centerY, "TEST");
-      this.text.fontSize = 30;
+    this.text = this.addChild(this.game.add.text(this.zeroX+this.width/2, this.zeroY+this.height/2, description));
+    this.text.anchor.setTo(0.5);
+    this.text.fontSize = 30;
   }
 
   this.destroySelf = function(){
@@ -885,6 +891,28 @@ var SmallTower = function(conflux, game, x, y, group, data) {
   this.game = game;
   this.conflux = conflux;
 
+  for(var i=0;i<data.roundButtons.length;i++){
+    if (data.roundButtons[i] != 0) {
+      var coords = conflux.dummyRoundButtonsCoordinates[i];
+      var button = this.addChild(this.game.make.sprite(coords[0], coords[1], 'roundButtons'));
+      button.frame = data.roundButtons[i];
+    }
+  }
+
+  for(var i=0;i<data.squareButtons.length;i++){
+    if (data.squareButtons[i] != 0) {
+      var coords = conflux.dummySquareButtonsCoordinates[i];
+      var button = this.addChild(this.game.make.sprite(coords[0], coords[1], 'squareButtons'));
+      button.frame = data.squareButtons[i];
+    }
+  }
+
+  for(var i=0;i<conflux.switchCoordinates.length;i++){
+    var coords = conflux.switchCoordinates[i];
+    var aSwitch = new Element(conflux, game, coords[0], coords[1], game.world, 'switch', game.rnd.integerInRange(0, 1), "switch");
+    this.addChild(aSwitch);
+  }
+
   this.addBubble = function(){
     if(!this.displayingHelp){
       var bubble = new Bubble(this.game, this, "tower", "", "");
@@ -904,6 +932,14 @@ var Element = function(conflux, game, x, y, group, key, frame, description) {
   this.frame = frame;
   this.inputEnabled = true;
   this.displayingHelp = false;
+
+  this.addBubble = function(){
+    if(!this.displayingHelp){
+      var bubble = new Bubble(this.game, this, "control", "", this.description);
+      this.displayingHelp = true;
+    }
+  }
+  this.events.onInputDown.add(this.addBubble, this);
 
 }
 Element.prototype = Object.create(Phaser.Sprite.prototype);
