@@ -1,5 +1,6 @@
 class Translator < ApplicationRecord
   MASTER_LIST = YAML.load_file("#{Rails.root}/config/word_list.yml")
+  DIGRESSIONS = YAML.load_file("#{Rails.root}/config/digressions.yml")
   
   [:grandpa_wordbank, :grandson_wordbank, :grandpa_dictionary, :grandson_dictionary].each{|o| serialize o}
   belongs_to :game
@@ -38,5 +39,48 @@ class Translator < ApplicationRecord
     end
     self.grandpa_wordbank.each{|label, list| list.sort!}
     self.grandson_wordbank.each{|label, list| list.sort!}
+  end
+
+  def translate(user, word_list)
+    response = ""
+
+    word_list = word_list.map do |word|
+      if(user.type == 'Grandpa')
+        grandpa_dictionary[word]
+      elsif(user.type == 'Grandson')
+        grandson_dictionary[word]
+      end
+    end
+    if(user.type == 'Grandpa')
+      start_digression = false
+      word_list.each_index do |index|
+        if Random.new.rand(100)==50
+          start_digression ||= index
+        end
+      end
+      if start_digression
+        word_list = word_list.first(start_digression+1)
+        word_list.push << new_digression()
+      end
+    end
+    word_list.join(' ')
+  end
+
+  def new_digression
+    digression = ""
+    digression << DIGRESSIONS['intros'].sample
+    digression << DIGRESSIONS['stories'].sample
+    while(true)
+      chance = Random.new.rand(3)
+      if(chance == 0)
+        break
+      elsif(chance == 1)
+        digression << DIGRESSIONS['stories'].sample
+      else
+        digression << DIGRESSIONS['combiners'].sample
+        digression << DIGRESSIONS['stories'].sample
+      end
+    end
+    digression
   end
 end

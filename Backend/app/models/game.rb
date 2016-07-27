@@ -47,9 +47,9 @@ class Game < ApplicationRecord
 
   def send_message(user, commands)
     if(commands.empty?)
-      commands = ["Well, I say! I say!"]
+      commands = ["Well, I mean... I dunno. Nevermind."]
     end
-    message = "#{user.type}: #{commands.join(' ')}"
+    message = "#{user.type}: #{translator.translate(user, commands)}"
     ActionCable.server.broadcast "game_#{id}",
       action: "message",
       message: message
