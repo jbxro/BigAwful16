@@ -11,6 +11,7 @@ GameClient.Monitor = function(conflux, game, x, y, group, buttons, correctInput)
   group.add(this);
   this.powerOn = false;
   this.pluggedIn = false;
+  this.justPlugged = false;
   this.connected = false;
   this.working = false;
   this.buttons = game.add.group();
@@ -35,7 +36,6 @@ GameClient.Monitor = function(conflux, game, x, y, group, buttons, correctInput)
 
   this.togglePower = function(){
     if(this.pluggedIn){
-      console.log("power!");
       this.powerOn =! this.powerOn;
       this.displayOverlay();
     } else {
@@ -47,14 +47,12 @@ GameClient.Monitor = function(conflux, game, x, y, group, buttons, correctInput)
       this.input++;
       if(this.input > 3) this.input = 0;
       this.displayOverlay();
-      console.log("input " + String(this.input));
     } else {
       this.addFrustration();
     }
   }
   this.degauss = function(){
     if(this.powerOn){
-      console.log("degauss!");
       this.toggleShake();
       this.game.time.events.add(Phaser.Timer.SECOND * 1, this.toggleShake, this);
       this.addFrustration(true);
@@ -100,6 +98,8 @@ GameClient.Monitor = function(conflux, game, x, y, group, buttons, correctInput)
       if((this.input == this.correctInput) && this.connected && conflux.tower.sendingData){
         this.frame = 2;
         this.working = true;
+        conflux.addFrustration(-100);
+        conflux.triggerWin();
       } else {
         this.frame = 1;
       }
@@ -115,5 +115,3 @@ GameClient.Monitor = function(conflux, game, x, y, group, buttons, correctInput)
 }
 GameClient.Monitor.prototype = Object.create(Phaser.Sprite.prototype);
 GameClient.Monitor.prototype.constructor = GameClient.Monitor;
-
-

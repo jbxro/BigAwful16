@@ -129,5 +129,11 @@ GameClient.GFG.GrandsonGame.prototype = {
 
   render: function(){
 
+  },
+
+  triggerWin: function(){
+    var text = this.game.add.text(this.game.world.centerX, this.game.world.centerY, "YOU WIN!");
+    text.anchor.setTo(0.5);
+    text.fontSize = 50;
   }
 }
