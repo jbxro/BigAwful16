@@ -1,4 +1,5 @@
 class Game < ApplicationRecord
+  serialize :definition
   has_one :grandpa, dependent: :destroy
   has_one :grandson, dependent: :destroy
   has_one :translator, dependent: :destroy
@@ -56,9 +57,11 @@ class Game < ApplicationRecord
   end
 
   def start
+    self.definition = generate_definition
+    save!
     ActionCable.server.broadcast "game_#{id}",
         action: 'startClient',
-        message: test_data
+        message: definition 
 
     # Send out word lists
     ActionCable.server.broadcast "player_#{grandson.cid}",
@@ -88,47 +91,65 @@ class Game < ApplicationRecord
       message: "Receiving Help"
   end
 
-  def test_data
+  def generate_definition
+    monitors = generate_monitors
+    towers = generate_towers
+    definition = {
+      grandpasHardware: { monitor: rand(3), tower: rand(3) },
+      monitors: monitors,
+      towers: towers
+    }
+    definition
+  end
+  
+  def generate_monitors
+    monitors = []
+    shuffabit = lambda{('a'..'z').to_a.shuffle}
+    @possible_monitor_names = [
+      "#{shuffabit.call.first(3).join}-#{rand(500).to_s}#{shuffabit.call.first(2).join}",
+      "#{shuffabit.call.first(3).join}#{rand(500).to_s}",
+      "#{shuffabit.call.first(2).join}-#{shuffabit.call.first(1)}#{rand(2000).to_s}"
+    ].shuffle
+    3.times do
+      @possible_cable_colors = ['blue', 'green', 'yellow', 'red', 'purple'].shuffle
+      monitors << generate_monitor
+    end
+    monitors
+  end
+
+  def generate_monitor
+    monitor = { 
+      name: generate_monitor_name,
+      type: ['XVD', 'SGA'].sample,
+      logo: rand(10),
+      monitorButtons: generate_monitor_buttons,
+      monitorCables: {
+        power: @possible_cable_colors.pop,
+        data: @possible_cable_colors.pop
+      },
+      monitorInput: rand(4)
+    }
+    monitor
+  end
+
+  def generate_monitor_name
+    @possible_monitor_names.pop
+  end
+
+  def generate_monitor_buttons
+    buttons = [0,0,0,0,0,0,0,0,0,0,0,0]
+    slots = [0,1,2,3,4,5,6,7,8,9,10,11].shuffle
+    # 12 possible button slots, 4 possible unique non-zero values:
+    # 0: empty, 1: power, 2: input, 3: degauss, 4: nothing
+    [1,2,3,4].each do |n|
+      index = slots.pop
+      buttons[index] = n
+    end
+    buttons
+  end
+
+  def generate_towers
     {
-      # Make sure that grandpa's computer and tower don't share cable colors!
-      "grandpasHardware": {"monitor": 2,"tower": 1}, # randomized 0 - 2
-      "monitors":[ # array of possible monitors
-        {
-          "name": "SCL-50EX", # (semi)randomly generated
-          "type": "XVD", # XVD or SGA (replace with something funny later)
-          "logo": 2, # just in case
-          "monitorButtons": [0,0,1,0,0,0,2,0,0,0,4,3],
-          # 12 possible button slots, fill up 4:
-          # 0 - empty
-          # 1 - power
-          # 2 - input
-          # 3 - degauss
-          # 4 - nothing
-          "monitorCables": {"power": "blue", "data": "red"},
-          # Possible colors:
-          # blue, green, yellow, red, purple
-          "monitorInput": 2 # number of active input. randomized in range 0 - 3
-        },
-
-        {
-          "name": "AFG121",
-          "logo": 2,
-          "type": "SGA",
-          "monitorButtons": [0,2,0,0,0,0,0,0,0,1,4,3],
-          "monitorCables": {"power": "green", "data": "purple"},
-          "monitorInput": 2
-        },
-
-        {
-          "name": "WMM59T",
-          "logo": 2,
-          "type": "SGA",
-          "monitorButtons": [0,0,1,4,0,0,2,3,0,0,4,0],
-          "monitorCables": {"power": "red", "data": "blue"},
-          "monitorInput": 2
-        }
-      ],
-
       "towers": [ # array of possible towers
         {
           "name": "Super-1",
@@ -159,7 +180,6 @@ class Game < ApplicationRecord
           "squareButtons": [1,0],
           "towerSwitches": {"powerOn": "left", "monitorXVD": "right"}
         }
-
       ]
     }
   end
