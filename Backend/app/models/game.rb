@@ -111,7 +111,7 @@ class Game < ApplicationRecord
       "#{shuffabit.call.first(2).join}-#{shuffabit.call.first(1)}#{rand(2000).to_s}"
     ].shuffle
     3.times do
-      @possible_cable_colors = ['blue', 'green', 'yellow', 'red', 'purple'].shuffle
+      @possible_cable_colors = ['blue', 'green', 'red'].shuffle
       monitors << generate_monitor
     end
     monitors
@@ -155,7 +155,7 @@ class Game < ApplicationRecord
         "name": "Grinder XT",
     ].shuffle
     3.times do
-      @possible_cable_colors = ['blue', 'green', 'yellow', 'red', 'purple'].shuffle
+      @possible_cable_colors = ['yellow', 'purple'].shuffle
       monitors << generate_tower
     end
     monitors
