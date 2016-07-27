@@ -4,7 +4,6 @@
 
 App.Game = class Game
   constructor: (@websocket) ->
-    @screen = 
     @wordList = {}
     @messageBlock = []
     @wordListElement = $('#word-list')

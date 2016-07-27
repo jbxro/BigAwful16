@@ -121,7 +121,18 @@ grandson:
     'pop': []
 grandpa:
   nouns:
-    'button': ['whatchamacallit']
+    'button': ['button', 'button', 'doohickey']
+    'monitor': ['box', 'tv', 'gidgit', 'computer', 'computer']
+    'screen': ['window', 'tv', 'flat bit of the tv', 'flat bit of the computer']
+    'knob': ['knob', 'knob', 'spinny bit', 'spinner', 'dial']
+    'cable': ['cable', 'wire', 'plug', 'snakey thing', 'long bit']
+    'plug': ['plug', 'cable', 'wire', 'knobby bit', 'whatchamacallit', 'doodad']
+    'wall': ['wall']
+    'outlet': ['outlet', 'plug', 'socket']
+    'logo': ['logo', 'scribble', 'brand', 'gobblygook', 'label', 'sign']
+    'tower': ['other thing', 'box', 'computer', 'other computer', 'other box', 'thingamabob', 'whatever that is', 'shelf']
+    'circle': ['circle', 'circle', 'round thing', 'ball']
+    'square': ['square', 'square', 'square thing', ]
   relations:
     'front': []
     'back': []
@@ -142,7 +153,9 @@ grandpa:
     'thing': []
     'whatchamacallit': []
     'forgot': []
+    'on': []
   actions:
+    'go': []
     'turned': []
     'pressed': []
     'took out': []

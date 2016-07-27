@@ -46,6 +46,10 @@ class Translator < ApplicationRecord
 
     word_list = word_list.map do |word|
       if(user.type == 'Grandpa')
+        # 1 in 3 chance any noun just becomes a generic noun
+        if(Random.new.rand(3)==1 && grandpa_wordbank['nouns'].include?(word))
+          word = generic_noun
+        end
         grandpa_dictionary[word]
       elsif(user.type == 'Grandson')
         grandson_dictionary[word]
@@ -82,5 +86,9 @@ class Translator < ApplicationRecord
       end
     end
     digression
+  end
+
+  def generic_noun
+    "thing"
   end
 end
