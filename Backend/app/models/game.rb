@@ -56,6 +56,10 @@ class Game < ApplicationRecord
   end
 
   def start
+    ActionCable.server.broadcast "game_#{id}",
+        action: 'startClient',
+        message: test_data
+
     # Send out word lists
     ActionCable.server.broadcast "player_#{grandson.cid}",
       action: 'populateWordList',

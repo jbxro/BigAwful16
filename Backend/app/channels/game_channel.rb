@@ -31,10 +31,6 @@ class GameChannel < ApplicationCable::Channel
     @user.save!
     @game = @user.game
     stream_from "game_#{@game.id}"
-    ActionCable.server.broadcast "game_#{@game.id}",
-      action: 'startClient',
-      message: @game.test_data
-
     @translator = @game.translator
 
     # If the Grandpa is registering...
