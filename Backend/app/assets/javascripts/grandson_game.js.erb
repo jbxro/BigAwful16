@@ -116,6 +116,7 @@ GameClient.GFG.GrandsonGame.prototype = {
     this.towers = this.game.add.group();
     for(var i=0;i<this.data.monitors.length;i++){
       var coords = this.towerCoordinates[i];
+      debugger
       var monitor = new GameClient.SmallTower(this, this.game, coords[0], coords[1], this.towers, this.data.towers[i]);
     }
 

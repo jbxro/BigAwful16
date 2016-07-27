@@ -149,39 +149,37 @@ class Game < ApplicationRecord
   end
 
   def generate_towers
-    {
-      "towers": [ # array of possible towers
-        {
-          "name": "Super-1",
-          "logo": 3,
-          "towerPort": 0, # correct port to connect monitor - randomize 0 - 3
-          "towerCable": "green",
-          "roundButtons": [1,0], # randomize 0 - 2
-          "squareButtons": [2,2], # randomize 0 - 2
-          "towerSwitches": {"powerOn": "left", "monitorXVD": "right"} # randomize left or right
-        },
+    [
+      {
+        "name": "Super-1",
+        "logo": 3,
+        "towerPort": 0, # correct port to connect monitor - randomize 0 - 3
+        "towerCable": "green",
+        "roundButtons": [1,0], # randomize 0 - 2
+        "squareButtons": [2,2], # randomize 0 - 2
+        "towerSwitches": {"powerOn": "left", "monitorXVD": "right"} # randomize left or right
+      },
 
-        {
-          "name": "Grinder XT",
-          "logo": 3,
-          "towerPort": 2,
-          "towerCable": "red",
-          "roundButtons": [1,2],
-          "squareButtons": [1,2],
-          "towerSwitches": {"powerOn": "left", "monitorXVD": "right"}
-        },
+      {
+        "name": "Grinder XT",
+        "logo": 3,
+        "towerPort": 2,
+        "towerCable": "red",
+        "roundButtons": [1,2],
+        "squareButtons": [1,2],
+        "towerSwitches": {"powerOn": "left", "monitorXVD": "right"}
+      },
 
-        {
-          "name": "Mesa Supreme",
-          "logo": 3,
-          "towerPort": 1,
-          "towerCable": "purple",
-          "roundButtons": [2,1],
-          "squareButtons": [1,0],
-          "towerSwitches": {"powerOn": "left", "monitorXVD": "right"}
-        }
-      ]
-    }
+      {
+        "name": "Mesa Supreme",
+        "logo": 3,
+        "towerPort": 1,
+        "towerCable": "purple",
+        "roundButtons": [2,1],
+        "squareButtons": [1,0],
+        "towerSwitches": {"powerOn": "left", "monitorXVD": "right"}
+      }
+    ]
   end
 
 private
