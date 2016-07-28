@@ -171,7 +171,7 @@ class Game < ApplicationRecord
       towerSwitches: { powerOn: ['left','right'].sample, monitorXVD: ['left','right'].sample }
     }
   end
-
+  
 private
   def add_translator
     self.translator = Translator.create

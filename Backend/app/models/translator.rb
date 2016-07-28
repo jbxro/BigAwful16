@@ -46,19 +46,25 @@ class Translator < ApplicationRecord
 
     word_list = word_list.map do |word|
       if(user.type == 'Grandpa')
+        word = grandpa_dictionary[word]
         # 1 in 3 chance any noun just becomes a generic noun
-        if(Random.new.rand(3)==1 && grandpa_wordbank['nouns'].include?(word))
-          word = generic_noun
+        if grandpa_wordbank['nouns'].include?(word)
+          if(rand(3)==1)
+            word = generic_noun
+          end
+          if(rand(user.frustration) > 35)
+            word = aggressify(word)
+          end
         end
-        grandpa_dictionary[word]
       elsif(user.type == 'Grandson')
-        grandson_dictionary[word]
+        word = grandson_dictionary[word]
       end
+      word
     end
     if(user.type == 'Grandpa')
       start_digression = false
       word_list.each_index do |index|
-        if Random.new.rand(100)==50
+        if rand(100)==50
           start_digression ||= index
         end
       end
@@ -75,7 +81,7 @@ class Translator < ApplicationRecord
     digression << DIGRESSIONS['intros'].sample
     digression << DIGRESSIONS['stories'].sample
     while(true)
-      chance = Random.new.rand(3)
+      chance = rand(3)
       if(chance == 0)
         break
       elsif(chance == 1)
@@ -90,5 +96,9 @@ class Translator < ApplicationRecord
 
   def generic_noun
     "thing"
+  end
+
+  def aggressify(word)
+    ["god damn", "feckin'", "bloody", "stupid", "ARGH", "pissy", "damned", "fangled"].sample+" "+word
   end
 end

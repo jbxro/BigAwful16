@@ -62,4 +62,8 @@ class GameChannel < ApplicationCable::Channel
   def says(data)
     @game.send_message(@user, data['message'])
   end
+
+  def set_frustration(data)
+    @game.grandpa.update_frustration(data['message'].to_i)
+  end
 end
