@@ -61,7 +61,7 @@ class Game < ApplicationRecord
     save!
     ActionCable.server.broadcast "game_#{id}",
         action: 'startClient',
-        message: definition 
+        message: definition
 
     # Send out word lists
     ActionCable.server.broadcast "player_#{grandson.cid}",
@@ -101,7 +101,7 @@ class Game < ApplicationRecord
     }
     definition
   end
-  
+
   def generate_monitors
     monitors = []
     shuffabit = lambda{('a'..'z').to_a.shuffle}
@@ -118,7 +118,7 @@ class Game < ApplicationRecord
   end
 
   def generate_monitor
-    monitor = { 
+    monitor = {
       name: generate_monitor_name,
       type: ['XVD', 'SGA'].sample,
       logo: rand(10),
@@ -160,11 +160,12 @@ class Game < ApplicationRecord
     end
     monitors
   end
-  
+
   def generate_tower
     {
       name: @possible_tower_names.pop,
       logo: rand(4),
+      towerPort: rand(4),
       towerCable: @possible_cable_colors.pop,
       roundButtons: [rand(3), rand(3)],
       squareButtons: [rand(3), rand(3)],

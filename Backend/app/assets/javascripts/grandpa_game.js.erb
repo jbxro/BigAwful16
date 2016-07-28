@@ -75,8 +75,6 @@ GameClient.GFG.GrandpaGame.prototype = {
       this.game.camera.bounds = null;
 
       this.frustration = 0;
-      this.frustrationRate = 1;
-      this.game.time.events.loop(5 * Phaser.Timer.SECOND, this.addFrustration, this);
 
       this.monitor = new GameClient.Monitor(this, this.game, 279, 113, this.game.world, this.grandpasMonitor.monitorButtons, this.grandpasMonitor.monitorInput);
       this.monitor.generateLayout();
@@ -101,7 +99,8 @@ GameClient.GFG.GrandpaGame.prototype = {
       this.ports = this.game.add.group();
       this.sockets = this.game.add.group();
       for(var i=0;i<4;i++){
-        var port = new GameClient.Port(this, this.game, 1045, 324 - (i * 52), this.ports);
+        var correct = this.grandpasTower.towerPort == i ? true : false;
+        var port = new GameClient.Port(this, this.game, 1045, 324 - (i * 52), this.ports, correct);
       }
       for(var i=0;i<2;i++){
         var socket = new GameClient.Socket(this, this.game, 781, 424 - (i * 78), this.sockets);
@@ -117,15 +116,12 @@ GameClient.GFG.GrandpaGame.prototype = {
               if(this.floatingCables.children[i].active) proceed = false;
             }
             if(proceed){
-              this.floatingCables.children[index].toggleDrag();
-              item.pluggedCable.visible =! item.pluggedCable.visible;
+              item.unplug();
             }
           } else {
             for(var i=0;i<this.floatingCables.children.length;i++){
               if(this.floatingCables.children[i].active){
-                this.floatingCables.children[i].toggleDrag();
-                item.pluggedCable.visible =! item.pluggedCable.visible;
-                item.pluggedCable.frame = i;
+                item.plug(this.floatingCables.children[i]);
               }
             }
           }
@@ -142,15 +138,12 @@ GameClient.GFG.GrandpaGame.prototype = {
               if(this.floatingCables.children[i].active) proceed = false;
             }
             if(proceed){
-              this.floatingCables.children[index].toggleDrag();
-              item.pluggedCable.visible =! item.pluggedCable.visible;
+              item.unplug();
             }
           } else {
             for(var i=0;i<this.floatingCables.children.length;i++){
               if(this.floatingCables.children[i].active){
-                this.floatingCables.children[i].toggleDrag();
-                item.pluggedCable.visible =! item.pluggedCable.visible;
-                item.pluggedCable.frame = i;
+                item.plug(this.floatingCables.children[i]);
               }
             }
           }
@@ -187,12 +180,12 @@ GameClient.GFG.GrandpaGame.prototype = {
         item.events.onInputDown.add(function(){
           var plugged;
           for (var i=0;i<this.ports.children.length;i++){
-            if(this.ports.children[i].pluggedCable.visible && this.ports.children[i].pluggedCable.frame == index) plugged = true;
+            if(this.ports.children[i].pluggedIn && this.ports.children[i].pluggedCable.frame == index) plugged = true;
           }
           for (var i=0;i<this.sockets.children.length;i++){
-            if(this.sockets.children[i].pluggedCable.visible && this.sockets.children[i].pluggedCable.frame == index) plugged = true;
+            if(this.sockets.children[i].pluggedIn && this.sockets.children[i].pluggedCable.frame == index) plugged = true;
           }
-          if(!plugged){
+          if(!this.plugged){
             var proceed = true;
             for (var i=0;i<this.floatingCables.children.length;i++){
               if(this.floatingCables.children[i].active){
@@ -214,29 +207,9 @@ GameClient.GFG.GrandpaGame.prototype = {
 
     update: function() {
       this.barInside.updateCrop();
-      this.monitor.pluggedIn = false;
-      this.sockets.forEach(function(item){
-        if(item.pluggedCable.visible && (item.pluggedCable.frame == this.colors[this.grandpasMonitor.monitorCables.power])){
-          this.monitor.pluggedIn = true;
-        }
-      }, this);
 
-      this.monitor.connected = false;
-      this.ports.forEach(function(item){
-        var index = this.ports.children.indexOf(item);
-        if(item.pluggedCable.visible && (item.pluggedCable.frame == this.colors[this.grandpasMonitor.monitorCables.data]) && (index == this.grandpasTower.towerPort)){
-          this.monitor.connected = true;
-        }
-      }, this);
-
-      this.tower.pluggedIn = false;
       this.tower.powerOn = false;
       this.tower.sendingData = false;
-      this.sockets.forEach(function(item){
-        if(item.pluggedCable.visible && (item.pluggedCable.frame == this.colors[this.grandpasTower.towerCable])){
-          this.tower.pluggedIn = true;
-        }
-      }, this);
 
       if(this.tower.pluggedIn){
         this.tower.powerOn = (this.switches.children[0].state == this.tower.powerOnSetting) ? true : false;
@@ -255,14 +228,11 @@ GameClient.GFG.GrandpaGame.prototype = {
     },
 
     addFrustration: function(amount) {
-      this.updateFrustrationRate();
-      if (typeof amount === 'undefined'){
-        amount = this.frustrationRate;
-      }
       if (this.frustration <= 100) {
         this.frustration += amount;
         if (this.frustration > 100){
           this.frustration = 100;
+          this.triggerLose();
         }
         if (this.frustration < 0){
           this.frustration = 0;
@@ -274,16 +244,15 @@ GameClient.GFG.GrandpaGame.prototype = {
       this.subscription.perform('set_frustration', {message: this.frustration})
     },
 
-    updateFrustrationRate: function() {
-      var r = 0;
-      this.monitor.pluggedIn ? r-- : r++;
-      this.monitor.powerOn ? r-- : r++;
-      this.monitor.connected ? r-- : r++;
-      this.tower.pluggedIn ? r-- : r++;
-      this.tower.powerOn ? r-- : r++;
-      (this.monitor.input == this.monitor.correctInput) ? r-- : r++;
-      this.frustrationRate = r;
+    triggerWin: function(){
+      var text = this.game.add.text(this.game.world.centerX, this.game.world.centerY, "YOU WIN!");
+      text.anchor.setTo(0.5);
+      text.fontSize = 50;
+    },
+
+    triggerLose: function(){
+      var text = this.game.add.text(this.game.world.centerX, this.game.world.centerY, "YOU LOSE!");
+      text.anchor.setTo(0.5);
+      text.fontSize = 50;
     }
   }
-
-
