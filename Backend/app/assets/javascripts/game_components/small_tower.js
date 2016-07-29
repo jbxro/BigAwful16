@@ -7,9 +7,6 @@ GameClient.SmallTower = function(conflux, game, x, y, group, data) {
   this.game = game;
   this.conflux = conflux;
 
-  // non-clickable elements
-
-  // draw round buttons
   for(var i=0;i<data.roundButtons.length;i++){
     if (data.roundButtons[i] != 0) {
       var coords = conflux.dummyRoundButtonsCoordinates[i];
@@ -18,7 +15,6 @@ GameClient.SmallTower = function(conflux, game, x, y, group, data) {
     }
   }
 
-  // draw square buttons
   for(var i=0;i<data.squareButtons.length;i++){
     if (data.squareButtons[i] != 0) {
       var coords = conflux.dummySquareButtonsCoordinates[i];
@@ -27,12 +23,8 @@ GameClient.SmallTower = function(conflux, game, x, y, group, data) {
     }
   }
 
-  // clickable elements
-
-  // draw switches
   for(var i=0;i<conflux.switchCoordinates.length;i++){
     var coords = conflux.switchCoordinates[i];
-    // generate description
     if(i == 0){
       var desc = "Power Switch\nOn: " + data.towerSwitches.powerOn;
     } else if (i == 1){
@@ -44,7 +36,6 @@ GameClient.SmallTower = function(conflux, game, x, y, group, data) {
 
   for(var i=0;i<4;i++){
     var coords = conflux.portCoordinates[i];
-    // generate description
     if(i == data.towerPort){
       var desc = "Display Port"
     } else {
@@ -54,7 +45,6 @@ GameClient.SmallTower = function(conflux, game, x, y, group, data) {
     this.addChild(port);
   }
 
-  // draw description pop up
   this.addBubble = function(){
     if(!this.displayingHelp){
       var bubble = new GameClient.Bubble(this.game, this, "tower", data, "");

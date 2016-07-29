@@ -7,7 +7,7 @@ GameClient.Cable = function(conflux, game, x, y, group, color) {
   this.active = false;
   this.plugged = false;
   this.inputEnabled = true;
-  this.input.enableDrag(false, true); // probably unnecessary?
+  this.input.enableDrag(false, true);
   this.anchor.x = 0.44;
 
   this.toggleDrag = function(){
@@ -16,7 +16,6 @@ GameClient.Cable = function(conflux, game, x, y, group, color) {
   }
 
   this.update = function(){
-    // make the cable follow the cursor
     if(this.active){
       this.x = game.input.x;
       this.y = game.input.y+10;
