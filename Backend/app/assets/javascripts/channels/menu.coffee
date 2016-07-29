@@ -6,6 +6,10 @@ App.connect_to_menu = ->
     message: (data) ->
       $('#message-log').append(jQuery('<div></div>').text(data.message))
 
+    setLobbyCount: (data) ->
+      element = $('.lobby-count')
+      element.text( data.message )
+
     incrementAvailableGrandpas: (data) ->
       element = $('.grandpa-count')
       element.text( Number(element.text())+1 )
