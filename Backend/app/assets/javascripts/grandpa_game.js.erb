@@ -72,11 +72,13 @@ GameClient.GFG.GrandpaGame.prototype = {
       this.game.load.spritesheet('screen', "<%= asset_path 'grandpa/screen.png'%>", 412, 336);
       this.game.load.spritesheet('frustrationBarWrapper', "<%= asset_path 'grandpa/barWrapper.png'%>", 476, 78);
 
-      this.game.load.audio('compNoise', ["<%= asset_path 'sound/comp_noise.ogg'%>", "<%= asset_path 'sound/comp_noise.mp3'%>"]);
+      this.game.load.audio('comp_noise', ["<%= asset_path 'sound/comp_noise.ogg'%>", "<%= asset_path 'sound/comp_noise.mp3'%>"]);
       this.game.load.audio('degauss', ["<%= asset_path 'sound/degauss.ogg'%>", "<%= asset_path 'sound/degauss.mp3'%>"]);
       this.game.load.audio('flip', ["<%= asset_path 'sound/flip.ogg'%>", "<%= asset_path 'sound/flip.mp3'%>"]);
       this.game.load.audio('horns', ["<%= asset_path 'sound/horns.ogg'%>", "<%= asset_path 'sound/horns.mp3'%>"]);
       this.game.load.audio('switch', ["<%= asset_path 'sound/switch.ogg'%>", "<%= asset_path 'sound/switch.mp3'%>"]);
+      this.game.load.audio('plug', ["<%= asset_path 'sound/plug.ogg'%>", "<%= asset_path 'sound/plug.mp3'%>"]);
+      this.game.load.audio('button', ["<%= asset_path 'sound/button.ogg'%>", "<%= asset_path 'sound/button.mp3'%>"]);
     },
 
     create: function() {
@@ -216,7 +218,7 @@ GameClient.GFG.GrandpaGame.prototype = {
       }, this);
 
       // increase frustration over time
-      this.game.time.events.loop(Phaser.Timer.SECOND * 20, this.addFrustration, this);
+      this.frustrationIncrement = this.game.time.events.loop(Phaser.Timer.SECOND * 20, this.addFrustration, this);
     },
 
     update: function() {
@@ -270,6 +272,7 @@ GameClient.GFG.GrandpaGame.prototype = {
     triggerLose: function(){
       this.over = true;
       this.game.input.mouse.enabled = false;
+      this.game.time.events.remove(this.frustrationIncrement);
       this.graphics = this.game.add.graphics(0, 0);
       this.graphics.lineStyle(10, 0xFF0000, 0.8);
       this.graphics.beginFill(0xFF0000, 1);
