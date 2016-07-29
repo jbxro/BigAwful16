@@ -46,10 +46,10 @@ GameClient.GFG.GrandsonGame.prototype = {
   ],
 
   portCoordinates: [
-    [83, 55],
-    [83, 81],
-    [83, 107],
     [83, 133],
+    [83, 107],
+    [83, 81],
+    [83, 55]
   ],
 
   monitorCoordinates: [
@@ -95,12 +95,17 @@ GameClient.GFG.GrandsonGame.prototype = {
     this.game.load.image('port', "<%= asset_path 'grandson/port.png'%>");
     this.game.load.image('monitor', "<%= asset_path 'grandson/monitor.png'%>");
     this.game.load.image('tower', "<%= asset_path 'grandson/tower.png'%>");
+    this.game.load.image('youDidIt', "<%= asset_path 'didit.png'%>");
+    this.game.load.image('youDidIt_1', "<%= asset_path 'didit_1.png'%>");
+
     this.game.load.spritesheet('roundButtons', "<%= asset_path 'grandson/roundButtons.png'%>", 16, 16);
     this.game.load.spritesheet('squareButtons', "<%= asset_path 'grandson/squareButtons.png'%>", 16, 6);
     this.game.load.spritesheet('cableIcons', "<%= asset_path 'grandson/cable_icons.png'%>", 35, 53);
     this.game.load.spritesheet('switch', "<%= asset_path 'grandson/switch.png'%>", 40, 35);
     this.game.load.spritesheet('bubble', "<%= asset_path 'grandson/bubble.png'%>", 343, 289);
 
+    this.game.load.audio('horns', ["<%= asset_path 'sound/horns.ogg'%>", "<%= asset_path 'sound/horns.mp3'%>"]);
+    this.game.load.audio('sadhorn', ["<%= asset_path 'sound/sadhorn.ogg'%>", "<%= asset_path 'sound/sadhorn.mp3'%>"]);
   },
 
   create: function(){
@@ -131,9 +136,13 @@ GameClient.GFG.GrandsonGame.prototype = {
 
   },
 
-  triggerWin: function(){
-    var text = this.game.add.text(this.game.world.centerX, this.game.world.centerY, "YOU WIN!");
-    text.anchor.setTo(0.5);
-    text.fontSize = 50;
-  }
+  // alternative = true to get slightly different "ending" (if grandpa lost)
+  triggerWin: function(alternative){
+    this.over = true;
+    this.game.input.mouse.enabled = false;
+    var key = alternative ? 'didit_1' : 'didit';
+    this.overlay = this.game.add.sprite(0, 0, key);
+    this.overlay.alpha = 0;
+    var tween = this.game.add.tween(this.overlay).to({alpha: 1}, 1000, "Linear", true);
+  },
 }
