@@ -36,7 +36,6 @@ GameClient.SmallTower = function(conflux, game, x, y, group, data) {
 
   for(var i=0;i<4;i++){
     var coords = conflux.portCoordinates[i];
-    var button = this.addChild(this.game.make.sprite(coords[0], coords[1], 'squareButtons'));
     if(i == data.towerPort){
       var desc = "Display Port"
     } else {
