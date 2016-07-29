@@ -6,7 +6,10 @@ GameClient.Socket = function(conflux, game, x, y, group) {
   this.pluggedCable.visible = false;
   this.pluggedIn = false;
 
+  this.sfx = game.add.audio('plug');
+
   this.plug = function(cable){
+    this.sfx.play();
     this.cable = cable;
     this.cable.toggleDrag();
     this.pluggedIn = true;
@@ -24,6 +27,7 @@ GameClient.Socket = function(conflux, game, x, y, group) {
 
   this.unplug = function(){
     if(this.pluggedIn){
+      this.sfx.play();
       this.cable.toggleDrag();
       this.pluggedCable.visible = false;
       this.pluggedIn = false;
