@@ -8,8 +8,8 @@ class Translator < ApplicationRecord
   before_create :build_dictionaries_and_wordbanks
 
   def build_dictionaries_and_wordbanks
-    self.grandpa_wordbank = {families: []}
-    self.grandson_wordbank = {families: []}
+    self.grandpa_wordbank = {}
+    self.grandson_wordbank = {}
     self.grandpa_dictionary = {}
     self.grandson_dictionary = {}
     MASTER_LIST.each do |target, families|
@@ -17,25 +17,33 @@ class Translator < ApplicationRecord
       for_grandson = ['grandson','both'].include?(target)
       families.each do |family, definitions|
         if for_grandpa
-          self.grandpa_wordbank[:families] << family
           self.grandpa_wordbank[family] ||= []
         end
         if for_grandson
-          self.grandson_wordbank[:families] << family
           self.grandson_wordbank[family] ||= []
         end
+        definitions ||= []
         definitions.each do |word, translations|
-          translation = translations.sample || word
           if for_grandpa
-            self.grandpa_dictionary[word] = translation 
-            self.grandpa_wordbank[family] << word
+            self.grandpa_dictionary[word] ||= []
+            self.grandpa_dictionary[word].concat(translations).uniq!
+            self.grandpa_wordbank[family] << word unless self.grandpa_wordbank[family].include?(word)
           end
           if for_grandson
-            self.grandson_dictionary[word] = translation 
-            self.grandson_wordbank[family] << word
+            self.grandson_dictionary[word] ||= []
+            self.grandson_dictionary[word].concat(translations).uniq!
+            self.grandson_wordbank[family] << word unless self.grandson_wordbank[family].include?(word)
           end
         end
       end
+    end
+    self.grandpa_dictionary = self.grandpa_dictionary.inject({}) do |hash, (key, value)|
+      hash[key] = value.push(key).sample
+      hash
+    end
+    self.grandson_dictionary = self.grandson_dictionary.inject({}) do |hash, (key, value)|
+      hash[key] = value.push(key).sample
+      hash
     end
     self.grandpa_wordbank.each{|label, list| list.sort!}
     self.grandson_wordbank.each{|label, list| list.sort!}

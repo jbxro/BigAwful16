@@ -23,7 +23,7 @@ App.Game = class Game
 
   updateWordList: (message) ->
     @wordList = message
-    @addFamily(family) for family in @wordList.families
+    @addFamily(family) for family in Object.keys(@wordList)
 
   addFamily: (family) =>
     familyElement = $('<div></div>').addClass(''+family+'-element family-container')
