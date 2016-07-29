@@ -1,4 +1,6 @@
 GameClient.Tower = function(conflux, game, grandpasTower) {
+  // object to store states, not a sprite
+  // has to be updated manually
   this.powerOn = false;
   this.sendingData = false;
   this.pluggedIn = false;
@@ -8,6 +10,8 @@ GameClient.Tower = function(conflux, game, grandpasTower) {
   this.sfx.loop = true;
   this.sfx.play();
 
+  // translate JSON spec to switch states
+  // e.g. tower is on if switch is set to false (left position)
   if(grandpasTower.towerSwitches.powerOn == "left") {
     this.powerOnSetting = false;
   } else {
@@ -20,8 +24,7 @@ GameClient.Tower = function(conflux, game, grandpasTower) {
   }
 
   this.update = function(){
-    console.log("updatin'!");
-    console.log(this.powerOn);
+    // toggle sound on/off
     if(this.powerOn){
       this.sfx.volume = 0.5;
     } else {

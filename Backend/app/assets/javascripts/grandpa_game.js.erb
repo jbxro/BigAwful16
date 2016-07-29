@@ -1,14 +1,15 @@
 GameClient.GFG.GrandpaGame = function(game){};
 GameClient.GFG.GrandpaGame.prototype = {
-    // Settings
-    // State variables
+    // game over variable
     over: false,
 
+    // coordinates of switches on towers, with descriptions
     switchCoordinates: [
       [950, 370, "power"],
       [950, 465, "display"]
     ],
 
+    // coordinates of all possible monitor buttons
     buttonCoordinates: [
       [225, 100],
       [225, 140],
@@ -24,16 +25,19 @@ GameClient.GFG.GrandpaGame.prototype = {
       [590, 465]
     ],
 
+    // coordinates of round buttons on tower
     dummyRoundButtonsCoordinates: [
       [920, 325],
       [965, 325]
     ],
 
+    // coordinates of square buttons on tower
     dummySquareButtonsCoordinates: [
       [905, 85],
       [945, 85]
     ],
 
+    // color dictionary - refers to cable spritesheet frames
     colors: {
       "blue": 0,
       "yellow": 1,
@@ -42,17 +46,20 @@ GameClient.GFG.GrandpaGame.prototype = {
       "purple": 4
     },
 
+    // switch dictionary - description to boolean switch state
     switchState: {
       "left": false,
       "right": true
     },
 
+    // read input JSON file
     init: function(inputData) {
       this.data = inputData;
       this.subscription = this.data.subscription;
      },
 
     preload: function() {
+      // loading up assets
       this.game.load.image('background', "<%= asset_path 'grandpa/bg.png'%>");
       this.game.load.image('port', "<%= asset_path 'grandpa/port.png'%>");
       this.game.load.image('panel', "<%= asset_path 'grandpa/panel.png'%>");
@@ -83,21 +90,28 @@ GameClient.GFG.GrandpaGame.prototype = {
     },
 
     create: function() {
+      // make references to
       this.grandpasMonitor = this.data.monitors[this.data.grandpasHardware.monitor];
       this.grandpasTower = this.data.towers[this.data.grandpasHardware.tower];
 
+      // allow screen shake
       this.game.camera.bounds = null;
 
+      // set up frustration level
       this.frustration = 0;
 
+      // make monitor and generate button layout
       this.monitor = new GameClient.Monitor(this, this.game, 279, 113, this.game.world, this.grandpasMonitor.monitorButtons, this.grandpasMonitor.monitorInput);
       this.monitor.generateLayout();
 
+      // make tower object
       this.tower = new GameClient.Tower(this, this.game, this.grandpasTower);
 
+      // draw background and bring buttons to top
       this.background = this.game.add.sprite(0,0,'background');
       this.game.world.bringToTop(this.monitor.buttons);
 
+      // draw dummy buttons on tower
       this.dummyButtons = this.game.add.group();
       for(var i=0;i<this.grandpasTower.roundButtons.length;i++){
         if(this.grandpasTower.roundButtons[i] != 0) {
@@ -110,134 +124,171 @@ GameClient.GFG.GrandpaGame.prototype = {
         }
       }
 
+      // make ports and sockets
       this.ports = this.game.add.group();
       this.sockets = this.game.add.group();
       for(var i=0;i<4;i++){
         var correct = this.grandpasTower.towerPort == i ? true : false;
+        // tower ports are drawn bottom to top
+        // FIXME: pull coordinates from table, not from ass.
         var port = new GameClient.Port(this, this.game, 1045, 324 - (i * 52), this.ports, correct);
       }
       for(var i=0;i<2;i++){
+        // sockets are drawn bottom to top
+        // FIXME: pull coordinates from table, not from ass.
         var socket = new GameClient.Socket(this, this.game, 781, 424 - (i * 78), this.sockets);
       }
 
+      // XXX: this is where the magic happens
+      // FIXME: needlessly complicated
       this.ports.forEach(function(item){
         item.inputEnabled = true;
+        // adding callback on click
         item.events.onInputDown.add(function(){
-          if(item.pluggedCable.visible){
+          if(item.pluggedCable.visible){ // if something is connected
             var index = item.pluggedCable.frame;
             var proceed = true;
             for(var i=0;i<this.floatingCables.children.length;i++){
+              // exit if user is carrying a cable
               if(this.floatingCables.children[i].active) proceed = false;
             }
             if(proceed){
+              // if user is not carrying a cable, unplug the port
               item.unplug();
             }
-          } else {
+        } else { // if nothing is connected
             for(var i=0;i<this.floatingCables.children.length;i++){
               if(this.floatingCables.children[i].active){
+                // find the carried cable, and plug it in
                 item.plug(this.floatingCables.children[i]);
               }
             }
           }
         }, this);
-      }, this);
+      }, this); // end pyramid of stupid
 
       this.sockets.forEach(function(item){
         item.inputEnabled = true;
         item.events.onInputDown.add(function(){
-          if(item.pluggedCable.visible){
+          if(item.pluggedCable.visible){ // if something is connected
             var index = item.pluggedCable.frame;
             var proceed = true;
             for(var i=0;i<this.floatingCables.children.length;i++){
+              // exit if user is carrying a cable
               if(this.floatingCables.children[i].active) proceed = false;
             }
             if(proceed){
+              // if user is not carrying a cable, unplug the port
               item.unplug();
             }
-          } else {
+          } else { // if nothing is connected
             for(var i=0;i<this.floatingCables.children.length;i++){
               if(this.floatingCables.children[i].active){
+                // find the carried cable, and plug it in
                 item.plug(this.floatingCables.children[i]);
               }
             }
           }
         }, this);
-      }, this);
+      }, this); // more pyramids than Egypt, son!
 
+      // create switches
       this.switches = this.game.add.group();
       for(var i=0;i<this.switchCoordinates.length;i++){
         var aSwitch = new GameClient.Switch(this, this.game, this.switchCoordinates[i][0], this.switchCoordinates[i][1], this.switches, this.switchCoordinates[i][2]);
       }
 
+      // this sprite covers up cables hanging in front of desk
       this.panel = this.game.add.sprite(750, 550, 'panel');
 
+      // draw frustration meter
       this.barInside = this.game.add.sprite(655, 635, 'frustrationBar');
       this.barInsideWidth = this.barInside.width;
       this.barCropRect = new Phaser.Rectangle(0,0,0,this.barInside.height);
       this.barInside.crop(this.barCropRect);
       this.barWrapper = this.game.add.sprite(650, 600, 'frustrationBarWrapper');
 
+      // draw sprites of carried cables (invisible)
       this.floatingCables = this.game.add.group();
       for(var i=0;i<5;i++){
         var cable = new GameClient.Cable(this, this.game, 0, 0 + (i * 100), this.floatingCables, i);
       }
 
+      // draw cable chooser on bottom left
       this.cableIcons = this.game.add.group();
       for(var i=0;i<5;i++){
+        // FIXME: more hardcoded coordinates
         this.cableIcons.create(40 + (i * 90), 580, 'cableIcons');
         this.cableIcons.children[i].frame = i;
         this.cableIcons.children[i].inputEnabled = true;
       }
 
+      // XXX: you thought I was done? Think again.
+      // FIXME: this is needlessly complicated
       this.cableIcons.forEach(function(item){
+        // get index of current child
         var index = this.cableIcons.children.indexOf(item);
+        //add callback on click
         item.events.onInputDown.add(function(){
           var plugged;
           for (var i=0;i<this.ports.children.length;i++){
+            // check if any port is plugged with current cable color
+            // if yes, mark the cable as plugged in
             if(this.ports.children[i].pluggedIn && this.ports.children[i].pluggedCable.frame == index) plugged = true;
           }
           for (var i=0;i<this.sockets.children.length;i++){
+            // check if any outlet is plugged with current cable color
+            // if yes, mark the cable as plugged in
             if(this.sockets.children[i].pluggedIn && this.sockets.children[i].pluggedCable.frame == index) plugged = true;
           }
-          if(!this.plugged){
+          if(!this.plugged){ // cable can be picked up
             var proceed = true;
             for (var i=0;i<this.floatingCables.children.length;i++){
+              // check if user is carrying a cable
               if(this.floatingCables.children[i].active){
+                // if yes, then return the carried cable
                 this.cableIcons.children[i].alpha = 1;
                 this.floatingCables.children[i].toggleDrag();
                 if(index == i){
+                  // stop if user returned cable to its spot
                   proceed = false;
                 }
               }
-            }
+          }
             if(proceed){
+              // dim current cable icon and pick up a cable
               this.cableIcons.children[index].alpha = 0.25;
               this.floatingCables.children[index].toggleDrag();
             }
           }
         }, this);
-      }, this);
+    }, this); // Fin. This is my absolute worst. Just awful.
 
       // increase frustration over time
       this.frustrationIncrement = this.game.time.events.loop(Phaser.Timer.SECOND * 20, this.addFrustration, this);
     },
 
     update: function() {
+      // crop the frustration bar
       this.barInside.updateCrop();
 
+      // if tower is plugged in, check power on/off
       if(this.tower.pluggedIn){
         this.tower.powerOn = (this.switches.children[0].state == this.tower.powerOnSetting) ? true : false;
       }
 
+      // if tower power is on, check if monitor switch is in correct position
       if(this.tower.powerOn){
         this.tower.sendingData = (this.switches.children[1].state == this.tower.monitorSetting) ? true : false;
       }
 
+      // Tower object has to be updated manually
       this.tower.update();
 
     },
 
     render: function() {
+      // SCREEEEEN SHAAAAAKEE
       if(this.frustration >= 50 && !this.over){
         this.game.camera.x = this.game.rnd.integerInRange(-1*((this.frustration-50)/5), (this.frustration-50)/10);
         this.game.camera.y = this.game.rnd.integerInRange(-1*((this.frustration-50)/5), (this.frustration-50)/10);
@@ -245,33 +296,42 @@ GameClient.GFG.GrandpaGame.prototype = {
     },
 
     addFrustration: function(amount) {
-      if(typeof amount == "undefined") { amount = 1}
+      if(typeof amount == "undefined") { amount = 1} // for timer callback
       if (this.frustration <= 100) {
         this.frustration += amount;
         if (this.frustration > 100){
           this.frustration = 100;
+          // you just lost the game.
           this.triggerLose();
         }
         if (this.frustration < 0){
           this.frustration = 0;
         }
       }
+      // animate the frustration meter
       var tween = this.game.add.tween(this.barCropRect).to( { width: (this.frustration/100)*this.barInsideWidth }, 100, "Linear", true);
       tween.start();
+      // draw graphics for critical frustration
       this.frustration >= 80 ? this.barWrapper.frame=1 : this.barWrapper.frame=0;
       this.subscription.perform('set_frustration', {message: this.frustration})
     },
 
     triggerWin: function(){
+      // remove all frustration
       this.addFrustration(-100);
+      // set the game as over
       this.over = true;
+      // disable input
       this.game.input.mouse.enabled = false;
 
+      // disable frustration increase timer
       this.game.time.events.remove(this.frustrationIncrement);
 
+      // fanfares!
       this.winSfx = this.game.add.audio('horns');
       this.winSfx.play();
 
+      // display victory message
       this.overlay = this.game.add.sprite(0, 0, 'didit');
       this.overlay.alpha = 0;
       var tween = this.game.add.tween(this.overlay).to({alpha: 1}, 1000, "Linear", true);
@@ -279,20 +339,26 @@ GameClient.GFG.GrandpaGame.prototype = {
     },
 
     triggerLose: function(){
+      // set the game as over
       this.over = true;
+      // disable input
       this.game.input.mouse.enabled = false;
 
+      // disable frustration increase timer
       this.game.time.events.remove(this.frustrationIncrement);
 
+      // flip the damn table!
       this.loseSfx = this.game.add.audio('flip');
       this.loseSfx.play();
 
+      // RED!
       this.graphics = this.game.add.graphics(0, 0);
       this.graphics.lineStyle(10, 0xFF0000, 0.8);
       this.graphics.beginFill(0xFF0000, 1);
       this.graphics.drawRect(0, 0, this.game.width, this.game.height);
       this.graphics.endFill();
 
+      // Fuck it. Doing it the easy way.
       this.overlay = this.game.add.sprite(0, 0, 'badend');
       this.overlay.alpha = 0;
       var tween = this.game.add.tween(this.overlay).to({alpha: 1}, 10000, "Linear", true);

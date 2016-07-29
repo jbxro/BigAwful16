@@ -1,6 +1,7 @@
 GameClient.DummyButton = function(conflux, game, x, y, group, key, color) {
   if(typeof group === 'undefined'){ group = game.world; }
   Phaser.Sprite.call(this, game, x, y, key);
+  // choose color
   if(color == 1) {
     this.frame = 0;
   } else {
@@ -10,9 +11,11 @@ GameClient.DummyButton = function(conflux, game, x, y, group, key, color) {
   this.conflux = conflux;
   this.inputEnabled = true;
 
+  // bleep!
   this.sfx = game.add.audio('button');
   this.sfx.volume = 0.4;
 
+  // on click
   this.action = function(){
     this.sfx.play();
     this.frame++;

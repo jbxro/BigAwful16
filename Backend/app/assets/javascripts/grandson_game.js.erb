@@ -1,7 +1,6 @@
 GameClient.GFG.GrandsonGame = function(game){};
 GameClient.GFG.GrandsonGame.prototype = {
-  // Settings
-  // State variables
+  // Color dictionary
   colors: {
     "blue": 0,
     "yellow": 1,
@@ -10,16 +9,13 @@ GameClient.GFG.GrandsonGame.prototype = {
     "purple": 4
   },
 
+  // switch state dictionary
   switchState: {
     "left": false,
     "right": true
   },
 
-  switchCoordinates: [
-    [35, 160],
-    [35, 210]
-  ],
-
+  // relative coordinates of buttons on monitor
   buttonCoordinates: [
     [6, 20],
     [6, 40],
@@ -35,16 +31,25 @@ GameClient.GFG.GrandsonGame.prototype = {
     [230, 204]
   ],
 
+  // relative coordinates of switches on tower
+  switchCoordinates: [
+    [35, 160],
+    [35, 210]
+  ],
+
+  // relative coordinates of round buttons on tower
   dummyRoundButtonsCoordinates: [
     [19, 133],
     [42, 133]
   ],
 
+  // relative coordinates of square buttons on tower
   dummySquareButtonsCoordinates: [
     [12, 12],
     [32, 12]
   ],
 
+  // relative coordinates of ports on tower
   portCoordinates: [
     [83, 133],
     [83, 107],
@@ -52,18 +57,21 @@ GameClient.GFG.GrandsonGame.prototype = {
     [83, 55]
   ],
 
+  // coordinates of monitors on screen
   monitorCoordinates: [
     [95, 106],
     [462, 106],
     [830, 106]
   ],
 
+  // coordinates of towers on screen
   towerCoordinates: [
     [165, 407],
     [533, 407],
     [900, 407]
   ],
 
+  // descriptions for useless ports on tower
   portDescriptions: [
     "Coaxial Port",
     "WiFi Port",
@@ -80,17 +88,28 @@ GameClient.GFG.GrandsonGame.prototype = {
     "Washing machine interface"
   ],
 
+  // descriptions for the useless button on monitor
   buttonDescriptions: [
-    "DUmMY 1",
-    "DUMMY 2",
-    "DUMMY 3"
+    "Color Enhancer",
+    "Widescreen Emulator",
+    "HDifier Toggle",
+    "Invert Colors",
+    "Nothing",
+    "Auto Contrast",
+    "Toggle mirror",
+    "Open hidden stash",
+    "Change aspect ratio",
+    "Self-destruct",
+    "Zen mode"
   ],
 
+  // load input data JSON
   init: function(inputData) {
     this.data = inputData;
   },
 
   preload: function(){
+    // load up assets
     this.game.load.image('background', "<%= asset_path 'grandson/bg.png'%>");
     this.game.load.image('port', "<%= asset_path 'grandson/port.png'%>");
     this.game.load.image('monitor', "<%= asset_path 'grandson/monitor.png'%>");
@@ -110,41 +129,49 @@ GameClient.GFG.GrandsonGame.prototype = {
 
   create: function(){
 
+    // add background and empty group for popups
     this.background = this.game.add.sprite(0, 0, 'background');
     this.game.labels = this.game.add.group();
 
+    //generate monitors
     this.monitors = this.game.add.group();
     for(var i=0;i<this.data.monitors.length;i++){
       var coords = this.monitorCoordinates[i];
       var monitor = new GameClient.SmallMonitor(this, this.game, coords[0], coords[1], this.monitors, this.data.monitors[i]);
     }
+    // generate towers
     this.towers = this.game.add.group();
     for(var i=0;i<this.data.monitors.length;i++){
       var coords = this.towerCoordinates[i];
       var monitor = new GameClient.SmallTower(this, this.game, coords[0], coords[1], this.towers, this.data.towers[i]);
     }
 
+    // make labels render on top of everything else
     this.game.world.bringToTop(this.game.labels);
 
   },
 
   update: function(){
-
+    // nothing to do here
   },
 
   render: function(){
-
+    // nothing to do here
   },
 
   // alternative = true to get slightly different "ending" (if grandpa lost)
   triggerWin: function(alternative){
+    // set game as over
     this.over = true;
+    // disable input
     this.game.input.mouse.enabled = false;
 
+    // fanfare, or not.
     var key = alternative ? 'sadhorn' : 'horns';
     this.winSfx = this.game.add.audio(key);
     this.winSfx.play();
 
+    // winning message, or not.
     var key = alternative ? 'didit_1' : 'didit';
     this.overlay = this.game.add.sprite(0, 0, key);
     this.overlay.alpha = 0;
