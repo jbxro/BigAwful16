@@ -20,6 +20,9 @@ both:
     'is': []
     'mean': []
     'now': []
+    'hello': []
+    'same': []
+    'different': []
   useful:
     'yes': []
     'no': []
@@ -99,6 +102,7 @@ both:
     'what': []
     'when': []
     'where': []
+    'has': []
   punctuation:
     '?': []
     '.': []
