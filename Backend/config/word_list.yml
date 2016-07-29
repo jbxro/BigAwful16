@@ -11,7 +11,6 @@ both:
     'I mean': []
     'to': []
     'please': []
-    'help': []
     'are': []
     'done': []
     'work': []
@@ -20,6 +19,7 @@ both:
     'happening': []
     'is': []
     'mean': []
+    'now': []
   useful:
     'yes': []
     'no': []
@@ -91,6 +91,8 @@ both:
     'a': []
     'an': []
     'some': []
+    'my': []
+    'your': []
   queries:
     'how': []
     'why': []
@@ -104,7 +106,7 @@ both:
     '...': []
     ',': []
   count:
-    '': []
+    '1': []
     '2': []
     '3': []
     '4': []
@@ -129,6 +131,7 @@ both:
     'pointy': []
     'flat': []
     'square': []
+    'important': []
   sounds:
     'beep': []
     'buzz': []
@@ -137,12 +140,14 @@ both:
 grandson:
   nouns:
     'button': ['depressor']
+    'color': []
+    'port': []
   relations:
   actions:
     'turn': []
     'press': []
     'take out': []
-    'attach': []
+    'put in': []
     'change': []
     'switch': []
   technical:
@@ -152,15 +157,17 @@ grandson:
     'aux2': []
     'tv': []
   sounds:
+  other:
+    'help': []
 grandpa:
   nouns:
-    'button': ['button', 'button', 'doohickey']
-    'monitor': ['box', 'tv', 'gidgit', 'computer', 'computer']
-    'screen': ['window', 'tv', 'flat bit of the tv', 'flat bit of the computer']
-    'knob': ['knob', 'knob', 'spinny bit', 'spinner', 'dial']
-    'cable': ['cable', 'wire', 'plug', 'snakey thing', 'long bit']
-    'plug': ['plug', 'cable', 'wire', 'knobby bit', 'whatchamacallit', 'doodad']
-    'wall': ['wall']
+    'button': ['doohickey', 'thingamabob', 'switch', 'circle']
+    'monitor': ['box', 'tv', 'tv', 'gidgit', 'computer', 'computer']
+    'screen': ['window', 'tv', 'flat bit of the tv', 'flat bit of the computer', 'glass']
+    'knob': ['knob', 'spinny bit', 'spinner', 'dial']
+    'cable': ['wire', 'plug', 'snakey thing', 'long bit']
+    'plug': ['cable', 'wire', 'knobby bit', 'whatchamacallit', 'doodad']
+    'wall': []
     'outlet': ['outlet', 'plug', 'socket']
     'logo': ['logo', 'scribble', 'brand', 'gobblygook', 'label', 'sign']
     'tower': ['other thing', 'box', 'computer', 'other computer', 'other box', 'thingamabob', 'whatever that is', 'shelf']
@@ -172,6 +179,7 @@ grandpa:
     'thing': []
     'whatchamacallit': []
     'forgot': []
+    'help': []
   actions:
     'went': []
     'turned': []
