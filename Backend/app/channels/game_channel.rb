@@ -24,7 +24,7 @@ class GameChannel < ApplicationCable::Channel
   def register(data)
     if(data['type'] == 'Grandson')
       @user = Grandson.find(data['id'])
-    else)
+    else
       @user = Grandpa.find(data['id'])
     end
     @user.cid = uuid

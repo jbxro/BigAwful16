@@ -151,8 +151,18 @@ class Game < ApplicationRecord
   def generate_towers
     monitors = []
     @possible_tower_names = [
-        "name": "Super-1",
-        "name": "Grinder XT",
+        "Super-1",
+        "Grinder XT",
+        "EVO GT",
+        "MEGADeck ST4",
+        "Nintendo Entertainment Tower",
+        "Loggerback LAN Master",
+        "Fidelus Maximus GV1.23",
+        "ST2 W3 FIREMAKER",
+        "Official Generic Brand Tower",
+        "AOL Advanced w/ Intel Dual Core Technology",
+        "Boxbrand Cheapo v4",
+        "Exvadius 1998XT"
     ].shuffle
     3.times do
       @possible_cable_colors = ['yellow', 'purple'].shuffle
