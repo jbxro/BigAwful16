@@ -18,4 +18,5 @@ App.connect_to_game = (user_type, user_id)->
       @game.updateWordList(data.message)
 
     startClient: (data) ->
+      data.message.subscription = @
       GameClient.start(user_type, 0, data.message);

@@ -49,6 +49,7 @@ GameClient.GFG.GrandpaGame.prototype = {
 
     init: function(inputData) {
       this.data = inputData;
+      this.subscription = this.data.subscription;
      },
 
     preload: function() {
@@ -255,6 +256,7 @@ GameClient.GFG.GrandpaGame.prototype = {
       var tween = this.game.add.tween(this.barCropRect).to( { width: (this.frustration/100)*this.barInsideWidth }, 100, "Linear", true);
       tween.start();
       this.frustration >= 80 ? this.barWrapper.frame=1 : this.barWrapper.frame=0;
+      this.subscription.perform('set_frustration', {message: this.frustration})
     },
 
     triggerWin: function(){
