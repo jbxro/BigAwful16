@@ -19,7 +19,7 @@ App.Game = class Game
     $('#status').text(message)
 
   updateLog: (message) ->
-    $('#message-log').append(jQuery('<div></div>').text(message))
+    $('#message-log').append(jQuery('<div></div>').html(message))
 
   updateWordList: (message) ->
     @wordList = message
@@ -34,7 +34,9 @@ App.Game = class Game
     @addWord(word, family, familyElement) for word in @wordList[family]
 
   addWord: (word, family, familyElement) =>
-    wordElement = $('<div></div>').addClass('word').text(word)
+    wordElement = $('<div></div>').addClass('word').html(word)
+    if(word in ['red','blue','green','purple','yellow'])
+      wordElement.addClass(word)
     wordElement.data('family', family).data('word', word)
     familyElement.append(wordElement)
     wordElement.click(@clickWord)
@@ -47,7 +49,9 @@ App.Game = class Game
 
   addMessageBlock: (word, family) ->
     @messageBlock.push(word)
-    wordElement = $('<span></span').addClass('word').text(word)
+    wordElement = $('<span></span').addClass('word').html(word)
+    if(word in ['red','blue','green','purple','yellow'])
+      wordElement.addClass(word)
     @messageBlockElement.append(wordElement)
 
   clearMessage: ->

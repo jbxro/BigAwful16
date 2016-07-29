@@ -54,7 +54,7 @@ class Translator < ApplicationRecord
 
     word_list = word_list.map do |word|
       if(user.type == 'Grandpa')
-        word = grandpa_dictionary[word]
+        word = grandpa_dictionary[word] || "uh"
         # 1 in 3 chance any noun just becomes a generic noun
         if grandpa_wordbank['nouns'].include?(word)
           if(rand(4)==1 || rand(user.frustration) > 50)
@@ -80,7 +80,7 @@ class Translator < ApplicationRecord
       elsif(user.type == 'Grandson')
         word = grandson_dictionary[word]
       end
-      word
+      colorify(word)
     end
     if(user.type == 'Grandpa')
       start_digression = false
@@ -95,6 +95,14 @@ class Translator < ApplicationRecord
       end
     end
     word_list.join(' ')
+  end
+
+  def colorify(word)
+    if(['red','blue','green','purple','yellow'].include?(word))
+      "<span class='#{word} color'>#{word}</span>"
+    else
+      word
+    end
   end
 
   def new_digression
@@ -120,6 +128,7 @@ class Translator < ApplicationRecord
   end
 
   def aggressify(word)
-    ["god damn", "feckin'", "bloody", "stupid", "ARGH", "pissy", "damned", "fangled", "flippin'", "horse-riding", "friznhagin"].sample+" "+word
+    intensifier = ["god damn", "feckin'", "bloody", "stupid", "ARGH", "pissy", "damned", "fangled", "flippin'", "horse-riding", "friznhagin"].sample
+    "<span class='emphasis'>#{intensifier} #{word}</span>"
   end
 end

@@ -50,7 +50,7 @@ class Game < ApplicationRecord
     if(commands.empty?)
       commands = ["Well, I mean... I dunno. Nevermind."]
     end
-    message = "#{user.type}: #{translator.translate(user, commands)}"
+    message = "<span class='speaker'>#{user.type}</span> #{translator.translate(user, commands)}"
     ActionCable.server.broadcast "game_#{id}",
       action: "message",
       message: message
