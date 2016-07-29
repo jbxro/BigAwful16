@@ -95,8 +95,8 @@ GameClient.GFG.GrandsonGame.prototype = {
     this.game.load.image('port', "<%= asset_path 'grandson/port.png'%>");
     this.game.load.image('monitor', "<%= asset_path 'grandson/monitor.png'%>");
     this.game.load.image('tower', "<%= asset_path 'grandson/tower.png'%>");
-    this.game.load.image('youDidIt', "<%= asset_path 'didit.png'%>");
-    this.game.load.image('youDidIt_1', "<%= asset_path 'didit_1.png'%>");
+    this.game.load.image('didit', "<%= asset_path 'didit.png'%>");
+    this.game.load.image('didit_1', "<%= asset_path 'didit_1.png'%>");
 
     this.game.load.spritesheet('roundButtons', "<%= asset_path 'grandson/roundButtons.png'%>", 16, 16);
     this.game.load.spritesheet('squareButtons', "<%= asset_path 'grandson/squareButtons.png'%>", 16, 6);
@@ -140,6 +140,11 @@ GameClient.GFG.GrandsonGame.prototype = {
   triggerWin: function(alternative){
     this.over = true;
     this.game.input.mouse.enabled = false;
+
+    var key = alternative ? 'sadhorn' : 'horns';
+    this.winSfx = this.game.add.audio(key);
+    this.winSfx.play();
+
     var key = alternative ? 'didit_1' : 'didit';
     this.overlay = this.game.add.sprite(0, 0, key);
     this.overlay.alpha = 0;

@@ -12,8 +12,8 @@ GameClient.Button = function(conflux, game, x, y, group, parent, type) {
   this.inputEnabled = true;
   this.conflux = conflux;
 
-  this.sfx = game.add.audio('button');
-  this.sfx.volume = 0.5;
+  this.sfx = game.add.audio('button_1');
+  this.sfx.volume = 0.6;
 
   this.action = function(){
     this.sfx.play();

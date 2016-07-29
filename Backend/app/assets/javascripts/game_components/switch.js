@@ -1,4 +1,4 @@
-GameClient.Switch = function(conflux, game, x, y, group) {
+GameClient.Switch = function(conflux, game, x, y, group, type) {
   if(typeof group === 'undefined'){ group = game.world; }
   Phaser.Sprite.call(this, game, x, y, 'switch');
   group.add(this);
@@ -6,7 +6,11 @@ GameClient.Switch = function(conflux, game, x, y, group) {
   this.inputEnabled = true;
   this.conflux = conflux
 
+  this.sfx = game.add.audio('switch');
+  this.sfx.volume = 0.7;
+
   this.toggle = function(){
+    this.sfx.play();
     this.state =! this.state;
     if(!this.conflux.tower.pluggedIn){
       this.conflux.addFrustration(5)

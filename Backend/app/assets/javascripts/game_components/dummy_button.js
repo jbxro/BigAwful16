@@ -10,7 +10,11 @@ GameClient.DummyButton = function(conflux, game, x, y, group, key, color) {
   this.conflux = conflux;
   this.inputEnabled = true;
 
+  this.sfx = game.add.audio('button');
+  this.sfx.volume = 0.4;
+
   this.action = function(){
+    this.sfx.play();
     this.frame++;
     this.game.time.events.add(Phaser.Timer.SECOND * 0.1, function(){
       this.frame--;

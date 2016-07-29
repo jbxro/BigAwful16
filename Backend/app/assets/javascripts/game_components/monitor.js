@@ -19,6 +19,9 @@ GameClient.Monitor = function(conflux, game, x, y, group, buttons, correctInput)
   this.overlay.visible = false;
   this.overlayActive = false;
 
+  this.degaussSfx = game.add.audio('degauss');
+  this.degaussSfx.volume = 0.6;
+
   this.generateLayout = function() {
     for (var i = 0; i < this.buttonList.length; i++) {
       if (this.buttonList[i] != 0){
@@ -53,6 +56,7 @@ GameClient.Monitor = function(conflux, game, x, y, group, buttons, correctInput)
   }
   this.degauss = function(){
     if(this.powerOn){
+      this.degaussSfx.play();
       this.toggleShake();
       this.game.time.events.add(Phaser.Timer.SECOND * 1, this.toggleShake, this);
       this.addFrustration(true);
@@ -98,8 +102,9 @@ GameClient.Monitor = function(conflux, game, x, y, group, buttons, correctInput)
       if((this.input == this.correctInput) && this.connected && conflux.tower.sendingData){
         this.frame = 2;
         this.working = true;
-        conflux.addFrustration(-100);
-        conflux.triggerWin();
+        if(!conflux.over){
+          conflux.triggerWin();
+        }
       } else {
         this.frame = 1;
       }
