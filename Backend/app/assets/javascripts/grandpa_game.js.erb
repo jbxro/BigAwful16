@@ -5,8 +5,8 @@ GameClient.GFG.GrandpaGame.prototype = {
     over: false,
 
     switchCoordinates: [
-      [950, 370],
-      [950, 465]
+      [950, 370, "power"],
+      [950, 465, "display"]
     ],
 
     buttonCoordinates: [
@@ -59,7 +59,7 @@ GameClient.GFG.GrandpaGame.prototype = {
       this.game.load.image('socket', "<%= asset_path 'grandpa/socket.png'%>");
       this.game.load.image('frustrationBar', "<%= asset_path 'grandpa/barInside.png'%>");
       this.game.load.image('badend', "<%= asset_path 'grandpa/badend.png'%>");
-      this.game.load.image('youDidIt', "<%= asset_path 'didit.png'%>");
+      this.game.load.image('didit', "<%= asset_path 'didit.png'%>");
 
       this.game.load.spritesheet('roundButtons', "<%= asset_path 'grandpa/buttons1.png'%>", 32, 32);
       this.game.load.spritesheet('squareButtons', "<%= asset_path 'grandpa/buttons2.png'%>", 31, 13);
@@ -79,6 +79,7 @@ GameClient.GFG.GrandpaGame.prototype = {
       this.game.load.audio('switch', ["<%= asset_path 'sound/switch.ogg'%>", "<%= asset_path 'sound/switch.mp3'%>"]);
       this.game.load.audio('plug', ["<%= asset_path 'sound/plug.ogg'%>", "<%= asset_path 'sound/plug.mp3'%>"]);
       this.game.load.audio('button', ["<%= asset_path 'sound/button.ogg'%>", "<%= asset_path 'sound/button.mp3'%>"]);
+      this.game.load.audio('button_1', ["<%= asset_path 'sound/button_1.ogg'%>", "<%= asset_path 'sound/button_1.mp3'%>"]);
     },
 
     create: function() {
@@ -165,7 +166,7 @@ GameClient.GFG.GrandpaGame.prototype = {
 
       this.switches = this.game.add.group();
       for(var i=0;i<this.switchCoordinates.length;i++){
-        var aSwitch = new GameClient.Switch(this, this.game, this.switchCoordinates[i][0], this.switchCoordinates[i][1], this.switches);
+        var aSwitch = new GameClient.Switch(this, this.game, this.switchCoordinates[i][0], this.switchCoordinates[i][1], this.switches, this.switchCoordinates[i][2]);
       }
 
       this.panel = this.game.add.sprite(750, 550, 'panel');
@@ -224,9 +225,6 @@ GameClient.GFG.GrandpaGame.prototype = {
     update: function() {
       this.barInside.updateCrop();
 
-      this.tower.powerOn = false;
-      this.tower.sendingData = false;
-
       if(this.tower.pluggedIn){
         this.tower.powerOn = (this.switches.children[0].state == this.tower.powerOnSetting) ? true : false;
       }
@@ -234,6 +232,7 @@ GameClient.GFG.GrandpaGame.prototype = {
       if(this.tower.powerOn){
         this.tower.sendingData = (this.switches.children[1].state == this.tower.monitorSetting) ? true : false;
       }
+
     },
 
     render: function() {
@@ -262,22 +261,36 @@ GameClient.GFG.GrandpaGame.prototype = {
     },
 
     triggerWin: function(){
+      this.addFrustration(-100);
       this.over = true;
       this.game.input.mouse.enabled = false;
+
+      this.game.time.events.remove(this.frustrationIncrement);
+
+      this.winSfx = this.game.add.audio('horns');
+      this.winSfx.play();
+
       this.overlay = this.game.add.sprite(0, 0, 'didit');
       this.overlay.alpha = 0;
       var tween = this.game.add.tween(this.overlay).to({alpha: 1}, 1000, "Linear", true);
+      tween.start();
     },
 
     triggerLose: function(){
       this.over = true;
       this.game.input.mouse.enabled = false;
+
       this.game.time.events.remove(this.frustrationIncrement);
+
+      this.loseSfx = this.game.add.audio('flip');
+      this.loseSfx.play();
+
       this.graphics = this.game.add.graphics(0, 0);
       this.graphics.lineStyle(10, 0xFF0000, 0.8);
       this.graphics.beginFill(0xFF0000, 1);
       this.graphics.drawRect(0, 0, this.game.width, this.game.height);
       this.graphics.endFill();
+
       this.overlay = this.game.add.sprite(0, 0, 'badend');
       this.overlay.alpha = 0;
       var tween = this.game.add.tween(this.overlay).to({alpha: 1}, 10000, "Linear", true);
