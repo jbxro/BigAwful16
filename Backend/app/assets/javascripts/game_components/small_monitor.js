@@ -7,6 +7,7 @@ GameClient.SmallMonitor = function(conflux, game, x, y, group, data) {
   this.game = game;
   this.conflux = conflux;
 
+  // generate the monitor button layout
   for(var i=0;i<conflux.buttonCoordinates.length;i++){
     var coords = conflux.buttonCoordinates[i];
     switch (data.monitorButtons[i] ) {
@@ -22,18 +23,20 @@ GameClient.SmallMonitor = function(conflux, game, x, y, group, data) {
         var desc = "Degauss";
         break;
       case 4:
+        // pick random description from list
         var desc = conflux.buttonDescriptions[this.game.rnd.integerInRange(0, conflux.buttonDescriptions.length-1)];
         break;
       default:
         console.log("Invalid button type");
     }
-
+    // draw the button
     if(data.monitorButtons[i] != 0){
       var button = new GameClient.Element(conflux, game, coords[0], coords[1], game.world, 'roundButtons', 4, desc);
       this.addChild(button);
     }
   }
 
+  // draw description pop up on click
   this.addBubble = function(){
     if(!this.displayingHelp){
       var bubble = new GameClient.Bubble(this.game, this, "monitor", data, "");
