@@ -233,6 +233,8 @@ GameClient.GFG.GrandpaGame.prototype = {
         this.tower.sendingData = (this.switches.children[1].state == this.tower.monitorSetting) ? true : false;
       }
 
+      this.tower.update();
+
     },
 
     render: function() {

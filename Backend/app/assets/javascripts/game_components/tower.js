@@ -20,13 +20,15 @@ GameClient.Tower = function(conflux, game, grandpasTower) {
   }
 
   this.update = function(){
+    console.log("updatin'!");
+    console.log(this.powerOn);
     if(this.powerOn){
       this.sfx.volume = 0.5;
     } else {
       this.sfx.volume = 0;
     }
   }
-  
+
 }
 GameClient.Tower.prototype = Object.create(Phaser.Sprite.prototype);
 GameClient.Tower.prototype.constructor = GameClient.Tower;
