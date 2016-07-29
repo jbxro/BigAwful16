@@ -63,7 +63,7 @@ class Translator < ApplicationRecord
           if(rand(user.frustration) > 25)
             word = aggressify(word)
             if(rand(user.frustration) > 35)
-              word = agressify(word)
+              word = aggressify(word)
             end
           end
         end
