@@ -23,8 +23,10 @@ App.Game = class Game
 
   updateWordList: (message) ->
     @wordList = message
-    @addFamily(family) for family in Object.keys(@wordList)
-
+    keys = Object.keys(@wordList)
+    keys.sort (a, b)=>
+      @wordList[b].length - @wordList[a].length
+    @addFamily(family) for family in keys
   addFamily: (family) =>
     familyElement = $('<div></div>').addClass(''+family+'-element family-container')
     familyElement.append($('<h5></h5>').text(family))
