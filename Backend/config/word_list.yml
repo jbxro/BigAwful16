@@ -59,6 +59,7 @@ both:
     'grandson': []
     'grandpa': []
     'pokemon': []
+    'signal': []
   relations:
     'on': []
     'front': []
@@ -81,6 +82,7 @@ both:
     'tell': []
     'do': []
     'touch': []
+    'help': []
   'pronouns/articles':
     'I': []
     'you': []
@@ -162,7 +164,6 @@ grandson:
     'tv': []
   sounds:
   other:
-    'help': []
 grandpa:
   nouns:
     'button': ['doohickey', 'thingamabob', 'switch', 'circle']
@@ -183,7 +184,6 @@ grandpa:
     'thing': []
     'whatchamacallit': []
     'forgot': []
-    'help': []
   actions:
     'went': []
     'turned': []
