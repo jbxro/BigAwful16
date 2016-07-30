@@ -24,13 +24,21 @@
   margin-right:2px;
 }
 
-#message-log{
+#message-container{
   border:1px dotted black;
-  padding:10px;
   margin:0px;
   margin-top:10px;
   width:100%;
   margin-bottom:3px;
+  height:200px;
+  overflow:hidden;
+  position:relative;
+
+  #message-log{
+    padding:10px;
+    position:absolute;
+    bottom:0px;
+  }
 
   .speaker{
     font-weight:bold;
