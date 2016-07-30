@@ -9,18 +9,24 @@
     </div>
   </div>
 
+  <div id='controls'>
+    <div id='left-tab' class='selected tab'><%= @user.type == 'Grandpa' ? "View Computer" : "View Manual" %></div>
+    <div id='right-tab'class='tab'>Talk on Phone</div>
+  </div>
+
   <div id='main'>
   </div>
 
-  <form id="message-builder">
-    <div id='message-block'></div>
-    <button>Submit</button>
-  </form>
+  <div id='builder' class='hidden'>
+    <form id="message-builder">
+      <div id='message-block'></div>
+      <button>Submit</button>
+    </form>
 
-  <div id='word-list'>
-    <h4>WORD LIST:</h4>
+    <div id='word-list'>
+      <h4>WORD LIST:</h4>
+    </div>
   </div>
-
 </div>
 
 <%= javascript_tag do %>

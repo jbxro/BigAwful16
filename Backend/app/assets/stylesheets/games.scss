@@ -24,6 +24,33 @@
   margin-right:2px;
 }
 
+#controls{
+  &:after{
+    content: '';
+    display: block;
+    clear:both;
+  }
+
+  .tab{
+    float:left;
+    width:200px;
+    border:1px solid black;
+    border-bottom:0px;
+    border-radius: 5px 5px 0px 0px;
+    background-color: #AAA;
+    color: #111;
+
+    &.selected{
+      background-color:#FFF;
+      color: black;
+    }
+  }
+}
+
+.hidden{
+  display:none;
+}
+
 #message-container{
   border:1px dotted black;
   margin:0px;
@@ -61,7 +88,6 @@
 }
 
 #message-builder{
-  clear:both;
   border:1px solid black;
   border-radius:5px;
   padding:0px;

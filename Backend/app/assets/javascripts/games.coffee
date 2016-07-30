@@ -8,7 +8,27 @@ App.Game = class Game
     @messageBlock = []
     @wordListElement = $('#word-list')
     @messageBlockElement = $('#message-block')
+    @builderEl = $('#builder')
+    @mainEl = $('#main')
+    @leftTab = $('#left-tab')
+    @rightTab = $('#right-tab')
     $('#message-builder').submit(@submitMessage)
+    @leftTab.click(@viewMain)
+    @rightTab.click(@viewBuilder)
+
+  viewMain: =>
+    if(!@builderEl.hasClass('hidden'))
+      @builderEl.addClass('hidden')
+      @rightTab.removeClass('selected')
+      @leftTab.addClass('selected')
+      @mainEl.removeClass('hidden')
+
+  viewBuilder: =>
+    if(!@mainEl.hasClass('hidden'))
+      @mainEl.addClass('hidden')
+      @leftTab.removeClass('selected')
+      @rightTab.addClass('selected')
+      @builderEl.removeClass('hidden')
 
   submitMessage: (event) =>
     event.preventDefault()
