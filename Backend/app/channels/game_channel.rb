@@ -68,11 +68,17 @@ class GameChannel < ApplicationCable::Channel
   end
 
   def win
-    ActionCable.server.broadcast "player_#{@game.reload.grandson.cid}",
+    ActionCable.server.broadcast "player_#{@game.grandson.cid}",
       action: 'win'
     ActionCable.server.broadcast "game_#{@game.id}",
       action: 'message',
       message: "Grandpa has successfully turned on his computer. The game is over."
+    ActionCable.server.broadcast "player_#{@game.grandpa.cid}",
+      action: 'updateStatus',
+      message: "Finally getting things done"
+    ActionCable.server.broadcast "player_#{@game.grandson.cid}",
+      action: 'updateStatus',
+      message: "Enjoying yourself"
   end
 
   def lose
@@ -81,5 +87,11 @@ class GameChannel < ApplicationCable::Channel
     ActionCable.server.broadcast "game_#{@game.id}",
       action: 'message',
       message: "Grandpa has given up. The game is over."
+    ActionCable.server.broadcast "player_#{@game.grandpa.cid}",
+      action: 'updateStatus',
+      message: "Finally getting things done"
+    ActionCable.server.broadcast "player_#{@game.grandson.cid}",
+      action: 'updateStatus',
+      message: "Enjoying yourself"
   end
 end
