@@ -48,6 +48,7 @@ GameClient.GFG.GrandpaGame.prototype = {
     },
 
     init: function(inputData) {
+      GameClient.gameState = this;
       this.data = inputData;
       this.subscription = this.data.subscription;
      },
@@ -275,6 +276,7 @@ GameClient.GFG.GrandpaGame.prototype = {
       this.overlay = this.game.add.sprite(0, 0, 'didit');
       this.overlay.alpha = 0;
       var tween = this.game.add.tween(this.overlay).to({alpha: 1}, 1000, "Linear", true);
+      this.subscription.perform('win')
       tween.start();
     },
 
@@ -296,7 +298,7 @@ GameClient.GFG.GrandpaGame.prototype = {
       this.overlay = this.game.add.sprite(0, 0, 'badend');
       this.overlay.alpha = 0;
       var tween = this.game.add.tween(this.overlay).to({alpha: 1}, 10000, "Linear", true);
+      this.subscription.perform('lose')
       tween.start();
-
     }
   }

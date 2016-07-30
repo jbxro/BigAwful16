@@ -8,6 +8,12 @@ App.connect_to_game = (user_type, user_id)->
     received: (data) ->
       @[data.action](data)
 
+    win: ->
+      GameClient.gameState.triggerWin(false)
+    
+    lose: ->
+      GameClient.gameState.triggerWin(true)
+
     message: (data) ->
       @game.updateLog(data.message)
 

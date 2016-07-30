@@ -5,7 +5,7 @@ class GameChannel < ApplicationCable::Channel
   end
 
   def unsubscribed
-    if(@game)
+    if(@game.reload)
       if(@game.grandpa.nil? || @game.grandson.nil?)
         @game.destroy
       elsif(@user.type == 'Grandpa')
@@ -30,7 +30,7 @@ class GameChannel < ApplicationCable::Channel
     @user.cid = uuid
     @user.save!
     @game = @user.game
-    stream_from "game_#{@game.id}"
+    stream_from "game_#{@game.reload.id}"
     @translator = @game.translator
 
     # If the Grandpa is registering...
@@ -60,10 +60,26 @@ class GameChannel < ApplicationCable::Channel
   end
   
   def says(data)
-    @game.send_message(@user, data['message'])
+    @game.reload.send_message(@user, data['message'])
   end
 
   def set_frustration(data)
-    @game.grandpa.update_frustration(data['message'].to_i)
+    @game.reload.grandpa.update_frustration(data['message'].to_i)
+  end
+
+  def win
+    ActionCable.server.broadcast "player_#{@game.reload.grandson.cid}",
+      action: 'win'
+    ActionCable.server.broadcast "game_#{@game.id}",
+      action: 'message',
+      message: "Grandpa has successfully turned on his computer. The game is over."
+  end
+
+  def lose
+    ActionCable.server.broadcast "player_#{@game.reload.grandson.cid}",
+      action: 'lose'
+    ActionCable.server.broadcast "game_#{@game.id}",
+      action: 'message',
+      message: "Grandpa has given up. The game is over."
   end
 end
