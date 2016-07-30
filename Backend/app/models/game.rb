@@ -83,7 +83,7 @@ class Game < ApplicationRecord
       message: "Providing Tech Support"
     ActionCable.server.broadcast "player_#{grandson.cid}",
       action: 'message',
-      message: "You open up your the tech manual app you have installed. You can click on components to see details."
+      message: "You open up your the tech manual app you have installed. You can click on components, devices, ports, switches, and buttons to see details."
 
     # Messages to Grandpa
     ActionCable.server.broadcast "player_#{grandpa.cid}",
