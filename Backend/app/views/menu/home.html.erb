@@ -9,6 +9,19 @@
   <span class="lobby-count">0</span> players are currently chilling on this page.
 </div>
 
+<% if @high_scores.count > 0 %>
+  <div id='high-scores'>
+    <h3>This has all happened befored...</h3>
+    <% @high_scores.each do |high_score| %>
+      <% if high_score.status == 'won' %>
+        <div class='score won'>Game #<%= high_score.id %> ended with grandpa powering on in <%= high_score.formatted_duration %></div>
+      <% elsif high_score.status == 'lost' %>
+        <div class='score lost'>Game #<%= high_score.id %> ended with grandpa giving up in <%= high_score.formatted_duration %></div>
+      <% end %>
+    <% end %>
+  </div>
+<% end %>
+
 <%= javascript_tag do %>
   App.connect_to_menu()
 <% end %>

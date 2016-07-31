@@ -3,9 +3,11 @@ class Game < ApplicationRecord
   has_one :grandpa, dependent: :destroy
   has_one :grandson, dependent: :destroy
   has_one :translator, dependent: :destroy
+  belongs_to :high_score, optional:true
   has_many :messages
 
-  after_create(:add_translator)
+  before_create(:add_translator)
+  before_create(:add_high_score)
 
   default_scope { order('created_at') }
 
@@ -21,7 +23,7 @@ class Game < ApplicationRecord
     if(user.class == Grandpa)
       games = Game.needs_grandpas
       if(games.empty?)
-        game = Game.create(grandpa: user)
+        game = Game.create!(grandpa: user)
         ActionCable.server.broadcast "menu", action: "incrementAvailableGrandpas"
       else
         game = games.first
@@ -32,7 +34,7 @@ class Game < ApplicationRecord
     elsif(user.class == Grandson)
       games = Game.needs_grandsons
       if(games.empty?)
-        game = Game.create(grandson: user)
+        game = Game.create!(grandson: user)
         ActionCable.server.broadcast "menu", action: "incrementAvailableGrandsons"
       else
         game = games.first
@@ -92,6 +94,9 @@ class Game < ApplicationRecord
     ActionCable.server.broadcast "player_#{grandpa.cid}",
       action: 'updateStatus',
       message: "Receiving Help"
+
+    self.high_score.start_time = Time.now
+    self.high_score.save!
   end
 
   def generate_definition
@@ -186,8 +191,45 @@ class Game < ApplicationRecord
     }
   end
   
+  def win
+    self.high_score.end_time = Time.now
+    self.high_score.status = "won"
+    self.high_score.save!
+    ActionCable.server.broadcast "player_#{grandson.cid}",
+      action: 'win'
+    ActionCable.server.broadcast "game_#{id}",
+      action: 'message',
+      message: "Grandpa has successfully turned on his computer. The game is over. This game took #{high_score.formatted_duration}, and your unique game score identifier is '#{high_score.id}'"
+    ActionCable.server.broadcast "player_#{grandpa.cid}",
+      action: 'updateStatus',
+      message: "Finally getting things done"
+    ActionCable.server.broadcast "player_#{grandson.cid}",
+      action: 'updateStatus',
+      message: "Enjoying yourself"
+  end
+
+  def lose
+    self.high_score.end_time = Time.now
+    self.high_score.status = "lost"
+    self.high_score.save!
+    ActionCable.server.broadcast "player_#{grandson.cid}",
+      action: 'lose'
+    ActionCable.server.broadcast "game_#{id}",
+      action: 'message',
+      message: "Grandpa has given up. The game is over. This game took #{high_score.formatted_duration}, and your unique game score identifier is '#{high_score.id}'"
+    ActionCable.server.broadcast "player_#{grandpa.cid}",
+      action: 'updateStatus',
+      message: "Finally getting things done"
+    ActionCable.server.broadcast "player_#{grandson.cid}",
+      action: 'updateStatus',
+      message: "Enjoying yourself"
+  end
 private
   def add_translator
-    self.translator = Translator.create
+    self.translator = Translator.create!
+  end
+
+  def add_high_score
+    self.high_score = HighScore.create!
   end
 end

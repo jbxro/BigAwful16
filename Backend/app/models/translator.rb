@@ -3,7 +3,7 @@ class Translator < ApplicationRecord
   DIGRESSIONS = YAML.load_file("#{Rails.root}/config/digressions.yml")
   
   [:grandpa_wordbank, :grandson_wordbank, :grandpa_dictionary, :grandson_dictionary].each{|o| serialize o}
-  belongs_to :game
+  belongs_to :game, optional: true
 
   before_create :build_dictionaries_and_wordbanks
 

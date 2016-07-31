@@ -1,5 +1,5 @@
 class Grandson < ApplicationRecord
-  belongs_to :game
+  belongs_to :game, optional: true
 
   def type
     'Grandson'

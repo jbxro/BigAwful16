@@ -1,0 +1,12 @@
+#high-scores{
+  border:1px solid black;
+  padding:5px;
+  margin-top:10px;
+
+  .won{
+    background-color:#55FF55;
+  }
+  .lost{
+    background-color:#FF5555;
+  }
+}

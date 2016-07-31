@@ -37,7 +37,7 @@ class GameChannel < ApplicationCable::Channel
     if(@user.type == 'Grandpa')
       ActionCable.server.broadcast "player_#{@user.cid}",
         action: 'message',
-        message: "You need help. You dial the phone, and pray your grandson answers. He knows computers."
+        message: "Your computer won't turn on. You need help. You dial the phone, and pray your grandson answers. He knows computers."
       ActionCable.server.broadcast "player_#{@user.cid}",
         action: 'updateStatus',
         message: "Waiting for your Grandson to pick up the phone"
@@ -68,30 +68,10 @@ class GameChannel < ApplicationCable::Channel
   end
 
   def win
-    ActionCable.server.broadcast "player_#{@game.grandson.cid}",
-      action: 'win'
-    ActionCable.server.broadcast "game_#{@game.id}",
-      action: 'message',
-      message: "Grandpa has successfully turned on his computer. The game is over."
-    ActionCable.server.broadcast "player_#{@game.grandpa.cid}",
-      action: 'updateStatus',
-      message: "Finally getting things done"
-    ActionCable.server.broadcast "player_#{@game.grandson.cid}",
-      action: 'updateStatus',
-      message: "Enjoying yourself"
+    @game.reload.win
   end
 
   def lose
-    ActionCable.server.broadcast "player_#{@game.reload.grandson.cid}",
-      action: 'lose'
-    ActionCable.server.broadcast "game_#{@game.id}",
-      action: 'message',
-      message: "Grandpa has given up. The game is over."
-    ActionCable.server.broadcast "player_#{@game.grandpa.cid}",
-      action: 'updateStatus',
-      message: "Finally getting things done"
-    ActionCable.server.broadcast "player_#{@game.grandson.cid}",
-      action: 'updateStatus',
-      message: "Enjoying yourself"
+    @game.reload.lose
   end
 end
