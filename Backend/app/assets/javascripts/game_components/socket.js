@@ -22,13 +22,9 @@ GameClient.Socket = function(conflux, game, x, y, group) {
     // check if correct power cables are connected to socket
     if(this.pluggedCable.frame == conflux.colors[conflux.grandpasMonitor.monitorCables.power]){
       conflux.monitor.pluggedIn = true;
-      // relief
-      conflux.addFrustration(-10);
     }
     if(this.pluggedCable.frame == conflux.colors[conflux.grandpasTower.towerCable]){
       conflux.tower.pluggedIn = true;
-      // relief
-      conflux.addFrustration(-10);
     }
   }
 

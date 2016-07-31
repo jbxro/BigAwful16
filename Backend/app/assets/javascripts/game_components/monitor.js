@@ -71,7 +71,7 @@ GameClient.Monitor = function(conflux, game, x, y, group, buttons, correctInput)
       this.toggleShake();
       // stop after a second
       this.game.time.events.add(Phaser.Timer.SECOND * 1, this.toggleShake, this);
-      this.addFrustration(true);
+      this.addFrustration(5);
     } else {
       this.addFrustration();
     }

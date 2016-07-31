@@ -23,8 +23,6 @@ GameClient.Port = function(conflux, game, x, y, group, correct) {
     // check if display data cable is connected to tower display port
     if((this.pluggedCable.frame == conflux.colors[conflux.grandpasMonitor.monitorCables.data]) && correct){
       conflux.monitor.connected = true;
-      // relief
-      conflux.addFrustration(-10);
     }
   }
 
