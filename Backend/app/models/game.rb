@@ -116,7 +116,7 @@ class Game < ApplicationRecord
     @possible_monitor_names = [
       "#{shuffabit.call.first(3).join}-#{rand(500).to_s}#{shuffabit.call.first(2).join}",
       "#{shuffabit.call.first(3).join}#{rand(500).to_s}",
-      "#{shuffabit.call.first(2).join}-#{shuffabit.call.first(1)}#{rand(2000).to_s}"
+      "#{shuffabit.call.first(2).join}-#{shuffabit.call.first}#{rand(2000).to_s}"
     ].shuffle
     3.times do
       @possible_cable_colors = ['blue', 'green', 'red'].shuffle
