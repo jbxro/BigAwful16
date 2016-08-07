@@ -3,7 +3,7 @@ App.connect_to_game = (user_type, user_id)->
     # RESPONSES
     connected: ->
       @perform('register', {type: user_type, id: user_id})
-      @game = new App.Game(@)
+      @game = new App.Game(@, user_type)
 
     received: (data) ->
       @[data.action](data)
@@ -25,4 +25,8 @@ App.connect_to_game = (user_type, user_id)->
 
     startClient: (data) ->
       data.message.subscription = @
-      GameClient.start(user_type, 0, data.message);
+      if(user_type=='Grandpa')
+        GameClient.start(user_type, 0, data.message, 'main')
+      else
+        GameClient.start(user_type, 0, data.message, 'monitor')
+        GameClient.start(user_type, 0, data.message, 'tower')

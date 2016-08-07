@@ -10,14 +10,34 @@
   </div>
 
   <div id='controls'>
-    <div id='left-tab' class='selected tab'><%= @user.type == 'Grandpa' ? "View Computer" : "View Manual" %></div>
-    <div id='right-tab'class='tab'>Talk on Phone</div>
+    <% if @user.type == 'Grandson' %>
+      <div id='main-tab' class='selected tab' data-section='#main'>
+        Read Instructions
+      </div>
+      <div id='monitor-tab' class='tab' data-section='#monitor'>
+        View Monitors
+      </div>
+      <div id='tower-tab' class='tab' data-section='#tower'>
+        View Towers
+      </div>
+    <% else %>
+      <div id='main-tab' class='selected tab' data-section='#main'>
+        View Computer
+      </div>
+    <% end %>
+    <div id='builder-tab'class='tab' data-section='#builder'>Talk on Phone</div>
   </div>
 
-  <div id='main'>
+  <div id='main' class='section'>
   </div>
 
-  <div id='builder' class='hidden'>
+  <div id='monitor' class='hidden section'>
+  </div>
+
+  <div id='tower' class='hidden section'>
+  </div>
+
+  <div id='builder' class='hidden section'>
     <form id="message-builder">
       <div id='message-block'></div>
       <button>Submit</button>

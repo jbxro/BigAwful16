@@ -3,32 +3,31 @@
 # You can use CoffeeScript in this file: http://coffeescript.org/
 
 App.Game = class Game
-  constructor: (@websocket) ->
+  constructor: (@websocket, @userType) ->
     @wordList = {}
     @messageBlock = []
     @wordListElement = $('#word-list')
     @messageBlockElement = $('#message-block')
-    @builderEl = $('#builder')
-    @mainEl = $('#main')
-    @leftTab = $('#left-tab')
-    @rightTab = $('#right-tab')
+    if(@userType == 'Grandson')
+      $('#main-tab').click(@viewSection)
+      $('#monitor-tab').click(@viewSection)
+      $('#tower-tab').click(@viewSection)
+      $('#builder-tab').click(@viewSection)
+    else
+      $('#main-tab').click(@viewSection)
+      $('#builder-tab').click(@viewSection)
+    @tabs = $('.tab')
+    @sections = $('.section')
     $('#message-builder').submit(@submitMessage)
-    @leftTab.click(@viewMain)
-    @rightTab.click(@viewBuilder)
 
-  viewMain: =>
-    if(!@builderEl.hasClass('hidden'))
-      @builderEl.addClass('hidden')
-      @rightTab.removeClass('selected')
-      @leftTab.addClass('selected')
-      @mainEl.removeClass('hidden')
-
-  viewBuilder: =>
-    if(!@mainEl.hasClass('hidden'))
-      @mainEl.addClass('hidden')
-      @leftTab.removeClass('selected')
-      @rightTab.addClass('selected')
-      @builderEl.removeClass('hidden')
+  viewSection: (event) =>
+    tab = $(event.target)
+    section = $(tab.data('section'))
+    if(section.hasClass('hidden'))
+      @tabs.removeClass('selected')
+      tab.addClass('selected')
+      @sections.addClass('hidden')
+      section.removeClass('hidden')
 
   submitMessage: (event) =>
     event.preventDefault()
