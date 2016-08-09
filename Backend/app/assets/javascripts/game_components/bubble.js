@@ -34,21 +34,7 @@ GameClient.Bubble = function(game, parent, type, data, description) {
   this.zeroY = -1*(this.getLocalBounds().height * this.anchor.y);
 
   // drawing the pop up contents
-  if(type == "tower"){
-    // draw tower name
-    this.text1 = this.addChild(this.game.add.text(this.zeroX + this.width*0.5, this.zeroY + this.height*0.35, data.name+" Tower"));
-    this.text1.anchor.setTo(0.5);
-    this.text1.fontSize = 25;
-    // draw cable icon
-    this.cable = this.addChild(this.game.make.sprite(this.zeroX + this.width/2, this.zeroY + this.height*0.55, 'cableIcons'));
-    this.cable.anchor.setTo(0.5);
-    // set cable color
-    this.cable.frame = this.parentSprite.conflux.colors[data.towerCable];
-    // draw cable description
-    this.text2 = this.addChild(this.game.add.text(this.zeroX + this.width/2, this.zeroY + this.height*0.7, "Power cable"));
-    this.text2.anchor.setTo(0.5);
-    this.text2.fontSize = 20;
-  } else if(type == "monitor"){
+  if(type == "monitor"){
     // draw monitor name
     this.text0 = this.addChild(this.game.add.text(this.zeroX + this.width*0.5, this.zeroY + this.height*0.35, data.name+" Monitor"));
     this.text0.anchor.setTo(0.5);

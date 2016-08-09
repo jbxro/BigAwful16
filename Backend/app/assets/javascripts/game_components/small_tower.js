@@ -9,21 +9,21 @@ GameClient.SmallTower = function(conflux, game, x, y, group, data) {
 
   // Text
 
-  this.zeroX = -1*(this.getLocalBounds().width * this.anchor.x);
-  this.zeroY = -1*(this.getLocalBounds().height * this.anchor.y);
   // draw tower name
-  this.text1 = this.addChild(this.game.add.text(this.zeroX + this.width*0.5, this.zeroY + this.height*0.35, data.name+" Tower"));
-  this.text1.anchor.setTo(0.5);
-  this.text1.fontSize = 25;
+  this.titleText = this.addChild(this.game.add.text(this.width/2, -40, data.name));
+  this.titleText.anchor.setTo(0.5);
+  this.titleText.fontSize = 25;
+  this.titleText.wordWrap = true;
+  this.titleText.wordWrapWidth = 300;
   // draw cable icon
-  this.cable = this.addChild(this.game.make.sprite(this.zeroX + this.width/2, this.zeroY + this.height*0.55, 'cableIcons'));
+  this.cable = this.addChild(this.game.make.sprite(0, this.height*1.3, 'cableIcons'));
   this.cable.anchor.setTo(0.5);
   // set cable color
   this.cable.frame = this.conflux.colors[data.towerCable];
   // draw cable description
-  this.text2 = this.addChild(this.game.add.text(this.zeroX + this.width/2, this.zeroY + this.height*0.7, "Power cable"));
-  this.text2.anchor.setTo(0.5);
-  this.text2.fontSize = 20;
+  this.cableText = this.addChild(this.game.add.text(this.width/2, this.height*1.3, "Power cable"));
+  this.cableText.anchor.setTo(0);
+  this.cableText.fontSize = 20;
 
   // draw round buttons
   for(var i=0;i<data.roundButtons.length;i++){
