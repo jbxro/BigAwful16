@@ -65,14 +65,6 @@ class Game < ApplicationRecord
         action: 'startClient',
         message: definition
 
-    # Send out word lists
-    ActionCable.server.broadcast "player_#{grandson.cid}",
-      action: 'populateWordList',
-      message: translator.grandson_wordbank
-    ActionCable.server.broadcast "player_#{grandpa.cid}",
-      action: 'populateWordList',
-      message: translator.grandpa_wordbank
-
     # Messages to Grandson
     ActionCable.server.broadcast "player_#{grandson.cid}",
       action: 'message',

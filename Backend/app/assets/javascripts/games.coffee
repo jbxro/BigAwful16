@@ -46,6 +46,7 @@ App.Game = class Game
     keys.sort (a, b)=>
       @wordList[b].length - @wordList[a].length
     @addFamily(family) for family in keys
+
   addFamily: (family) =>
     familyElement = $('<div></div>').addClass(''+family+'-element family-container')
     familyElement.append($('<h5></h5>').text(family))
@@ -64,7 +65,8 @@ App.Game = class Game
     wordElement = $(event.target)
     word = wordElement.data('word')
     family = wordElement.data('family')
-    @addMessageBlock(word, family)
+    if(@messageBlockElement.is(':visible'))
+      @addMessageBlock(word, family)
 
   addMessageBlock: (word, family) ->
     @messageBlock.push(word)

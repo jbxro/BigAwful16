@@ -24,6 +24,8 @@ App.connect_to_game = (user_type, user_id)->
       @game.updateWordList(data.message)
 
     startClient: (data) ->
+      $('#builder .header').show()
+      $('.client-placeholder').remove()
       data.message.subscription = @
       if(user_type=='Grandpa')
         GameClient.start(user_type, 0, data.message, 'main')

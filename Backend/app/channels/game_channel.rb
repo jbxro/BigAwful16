@@ -41,6 +41,9 @@ class GameChannel < ApplicationCable::Channel
       ActionCable.server.broadcast "player_#{@user.cid}",
         action: 'updateStatus',
         message: "Waiting for your Grandson to pick up the phone"
+      ActionCable.server.broadcast "player_#{@user.cid}",
+        action: 'populateWordList',
+        message: @translator.grandpa_wordbank
     end
 
     # If the grandson is registering...
@@ -49,8 +52,17 @@ class GameChannel < ApplicationCable::Channel
         action: 'message',
         message: "You settle in for a nice, long gaming session. You've had a busy week, and are looking forward to the opportunity to relax."
       ActionCable.server.broadcast "player_#{@user.cid}",
+        action: 'message',
+        message: "One thought lingers in the back of your head, though - Your mom mentioned on Facebook that Grandpa finally bought a computer today."
+      ActionCable.server.broadcast "player_#{@user.cid}",
+        action: 'message',
+        message: "With that thought in mind, you quickly pull up a tech help guide from the first link on google. If he calls, at least you'll be ready. For now, you'll just have to keep your fingers crossed."
+      ActionCable.server.broadcast "player_#{@user.cid}",
         action: 'updateStatus',
         message: "Enjoying yourself"
+      ActionCable.server.broadcast "player_#{@user.cid}",
+        action: 'populateWordList',
+        message: @translator.grandson_wordbank
     end
 
     # If both users are now registered, start the game!

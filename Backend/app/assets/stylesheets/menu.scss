@@ -10,3 +10,26 @@
     background-color:#FF5555;
   }
 }
+
+.join-line{ 
+  margin-bottom:5px;
+
+  a{
+    width:150px;
+    display:inline-block;
+    padding:3px;
+    border:1px solid black;
+    border-radius:3px;
+    text-decoration: none;
+    color:#444;
+    text-align:center;
+
+    &:visited{
+      color:#444;
+    }
+
+    &:hover{
+      color:#AAA;
+    }
+  }
+}

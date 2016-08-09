@@ -1,3 +1,23 @@
 // Place all the styles related to the Grandsons controller here.
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
+
+#guide{
+  margin-left: auto;
+  margin-right: auto;
+  margin-top:10px;
+  margin-bottom:10px;
+  width:500px;
+  border:3px outset #555;
+  background-color:white;
+
+  h1{
+    width:100%;
+    text-align: center;
+  }
+
+  .text{
+    width:100%;
+    text-align:left;
+  }
+}
