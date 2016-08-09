@@ -10,16 +10,6 @@ GameClient.GFG.GrandsonMonitors.prototype = {
     "purple": 4
   },
 
-  switchState: {
-    "left": false,
-    "right": true
-  },
-
-  switchCoordinates: [
-    [35, 160],
-    [35, 210]
-  ],
-
   buttonCoordinates: [
     [6, 20],
     [6, 40],
@@ -35,16 +25,6 @@ GameClient.GFG.GrandsonMonitors.prototype = {
     [230, 204]
   ],
 
-  dummyRoundButtonsCoordinates: [
-    [19, 133],
-    [42, 133]
-  ],
-
-  dummySquareButtonsCoordinates: [
-    [12, 12],
-    [32, 12]
-  ],
-
   portCoordinates: [
     [83, 133],
     [83, 107],
@@ -52,32 +32,10 @@ GameClient.GFG.GrandsonMonitors.prototype = {
     [83, 55]
   ],
 
-  monitorCoordinates: [
+  coords: [
     [95, 106],
     [462, 106],
     [830, 106]
-  ],
-
-  towerCoordinates: [
-    [165, 407],
-    [533, 407],
-    [900, 407]
-  ],
-
-  portDescriptions: [
-    "Coaxial Port",
-    "WiFi Port",
-    "Laser Communication Port",
-    "Cellular Network Bus",
-    "IBS Port",
-    "GBS Port",
-    "PDA Port",
-    "YOSPOS Interface Connector",
-    "NOTIM Port (ED variety)",
-    "NOTIM Port (ANT variety)",
-    "Over/Under Port",
-    "VR Port",
-    "Washing machine interface"
   ],
 
   buttonDescriptions: [
@@ -93,40 +51,26 @@ GameClient.GFG.GrandsonMonitors.prototype = {
 
   preload: function(){
     this.game.load.image('background', "<%= asset_path 'grandson/bg.png'%>");
-    this.game.load.image('port', "<%= asset_path 'grandson/port.png'%>");
     this.game.load.image('monitor', "<%= asset_path 'grandson/monitor.png'%>");
-    this.game.load.image('tower', "<%= asset_path 'grandson/tower.png'%>");
     this.game.load.image('didit', "<%= asset_path 'didit.png'%>");
     this.game.load.image('didit_1', "<%= asset_path 'didit_1.png'%>");
 
     this.game.load.spritesheet('roundButtons', "<%= asset_path 'grandson/roundButtons.png'%>", 16, 16);
-    this.game.load.spritesheet('squareButtons', "<%= asset_path 'grandson/squareButtons.png'%>", 16, 6);
     this.game.load.spritesheet('cableIcons', "<%= asset_path 'grandson/cable_icons.png'%>", 35, 53);
-    this.game.load.spritesheet('switch', "<%= asset_path 'grandson/switch.png'%>", 40, 35);
     this.game.load.spritesheet('bubble', "<%= asset_path 'grandson/bubble.png'%>", 343, 289);
 
-    this.game.load.audio('horns', ["<%= asset_path 'sound/horns.ogg'%>", "<%= asset_path 'sound/horns.mp3'%>"]);
-    this.game.load.audio('sadhorn', ["<%= asset_path 'sound/sadhorn.ogg'%>", "<%= asset_path 'sound/sadhorn.mp3'%>"]);
   },
 
   create: function(){
-
     this.background = this.game.add.sprite(0, 0, 'background');
     this.game.labels = this.game.add.group();
 
     this.monitors = this.game.add.group();
     for(var i=0;i<this.data.monitors.length;i++){
-      var coords = this.monitorCoordinates[i];
-      var monitor = new GameClient.SmallMonitor(this, this.game, coords[0], coords[1], this.monitors, this.data.monitors[i]);
-    }
-    this.towers = this.game.add.group();
-    for(var i=0;i<this.data.monitors.length;i++){
-      var coords = this.towerCoordinates[i];
-      var monitor = new GameClient.SmallTower(this, this.game, coords[0], coords[1], this.towers, this.data.towers[i]);
+      var monitor = new GameClient.SmallMonitor(this, this.game, this.coords[i][0], this.coords[i][1], this.monitors, this.data.monitors[i]);
     }
 
     this.game.world.bringToTop(this.game.labels);
-
   },
 
   update: function(){
@@ -141,10 +85,6 @@ GameClient.GFG.GrandsonMonitors.prototype = {
   triggerWin: function(alternative){
     this.over = true;
     this.game.input.mouse.enabled = false;
-
-    var key = alternative ? 'sadhorn' : 'horns';
-    this.winSfx = this.game.add.audio(key);
-    this.winSfx.play();
 
     var key = alternative ? 'didit_1' : 'didit';
     this.overlay = this.game.add.sprite(0, 0, key);
