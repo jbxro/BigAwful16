@@ -91,15 +91,6 @@ GameClient.SmallTower = function(conflux, game, x, y, group, data) {
     var text = this.addChild(this.game.add.text(0, this.height+203-(40*i), desc));
     text.fontSize = 16;
   }
-
-  // draw description pop up
-  // this.addBubble = function(){
-  //   if(!this.displayingHelp){
-  //     var bubble = new GameClient.Bubble(this.game, this, "tower", data, "");
-  //     this.displayingHelp = true;
-  //   }
-  // }
-  // this.events.onInputDown.add(this.addBubble, this);
 }
 GameClient.SmallTower.prototype = Object.create(Phaser.Sprite.prototype);
 GameClient.SmallTower.prototype.constructor = GameClient.SmallTower;
