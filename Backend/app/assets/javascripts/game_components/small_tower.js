@@ -15,15 +15,20 @@ GameClient.SmallTower = function(conflux, game, x, y, group, data) {
   this.titleText.fontSize = 25;
   this.titleText.wordWrap = true;
   this.titleText.wordWrapWidth = 300;
-  // draw cable icon
-  this.cable = this.addChild(this.game.make.sprite(0, this.height*1.3, 'cableIcons'));
-  this.cable.anchor.setTo(0.5);
+  // draw power cable icon
+  this.cable = this.addChild(this.game.make.sprite(-80, this.height+25, 'cableIcons'));
+  this.cable.anchor.setTo(0);
   // set cable color
   this.cable.frame = this.conflux.colors[data.towerCable];
   // draw cable description
-  this.cableText = this.addChild(this.game.add.text(this.width/2, this.height*1.3, "Power cable"));
-  this.cableText.anchor.setTo(0);
-  this.cableText.fontSize = 20;
+  this.cableText = this.addChild(this.game.add.text(this.width/2, this.height+50, "<- Power Cable      Data Cable ->"));
+  this.cableText.anchor.setTo(0.5);
+  this.cableText.fontSize = 14;
+  // draw data cable icon
+  this.dataCable = this.addChild(this.game.make.sprite(this.width+40, this.height+25, 'cableIcons'));
+  this.dataCable.anchor.setTo(0);
+  // set cable color
+  this.dataCable.frame = this.conflux.colors[data.dataCable];
 
   // draw round buttons
   for(var i=0;i<data.roundButtons.length;i++){
@@ -48,13 +53,19 @@ GameClient.SmallTower = function(conflux, game, x, y, group, data) {
     var coords = conflux.switchCoordinates[i];
     // generate description
     if(i == 0){
-      var desc = "Power Switch\nOn: " + data.towerSwitches.powerOn;
+      var desc = "Power Toggle";
     } else if (i == 1){
-      var desc = "Monitor Compatibility\nXVD: " + data.towerSwitches.monitorXVD;
+      var desc = "Monitor Mode, Standard: " + data.towerSwitches.monitorXVD;
     }
     var aSwitch = new GameClient.Element(conflux, game, coords[0], coords[1], game.world, 'switch', game.rnd.integerInRange(0, 1), desc);
     this.addChild(aSwitch);
+    var marker = this.addChild(this.game.make.sprite(coords[0] + aSwitch.width+5, coords[1]+5, 'marker'))
+    marker.frame = i+4;
 
+    var textMarker = this.addChild(this.game.make.sprite(-30, this.height+240+(40*i), 'marker'))
+    textMarker.frame = i+4;
+    var text = this.addChild(this.game.add.text(0, this.height+243+(40*i), desc));
+    text.fontSize = 16;
   }
 
   for(var i=0;i<4;i++){
@@ -67,6 +78,13 @@ GameClient.SmallTower = function(conflux, game, x, y, group, data) {
     }
     var port = new GameClient.Element(conflux, game, coords[0], coords[1], game.world, 'port', 0, desc);
     this.addChild(port);
+    var marker = this.addChild(this.game.make.sprite(coords[0] + port.width+5, coords[1]-5, 'marker'))
+    marker.frame = (3-i);
+
+    var textMarker = this.addChild(this.game.make.sprite(-30, this.height+200-(40*i), 'marker'))
+    textMarker.frame = (3-i);
+    var text = this.addChild(this.game.add.text(0, this.height+203-(40*i), desc));
+    text.fontSize = 16;
   }
 
   // draw description pop up
