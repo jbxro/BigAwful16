@@ -55,7 +55,12 @@ GameClient.SmallTower = function(conflux, game, x, y, group, data) {
     if(i == 0){
       var desc = "Power Toggle";
     } else if (i == 1){
-      var desc = "Monitor Mode, Standard: " + data.towerSwitches.monitorXVD;
+      var desc = "Monitor Mode"
+      if(data.towerSwitches.monitorXVD == 'right'){
+        desc += " [PDR<->XVD]"
+      } else {
+        desc += " [XVD<->PDR]"
+      }
     }
     var aSwitch = new GameClient.Element(conflux, game, coords[0], coords[1], game.world, 'switch', game.rnd.integerInRange(0, 1), desc);
     this.addChild(aSwitch);
