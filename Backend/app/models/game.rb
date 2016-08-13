@@ -75,9 +75,6 @@ class Game < ApplicationRecord
     ActionCable.server.broadcast "player_#{grandson.cid}",
       action: 'updateStatus',
       message: "Providing Tech Support"
-    ActionCable.server.broadcast "player_#{grandson.cid}",
-      action: 'message',
-      message: "You open up your the tech manual app you have installed. You can click on components, devices, ports, switches, and buttons to see details."
 
     # Messages to Grandpa
     ActionCable.server.broadcast "player_#{grandpa.cid}",
@@ -92,10 +89,26 @@ class Game < ApplicationRecord
   end
 
   def generate_definition
+    @number_of_towers = case self.grandson.difficulty
+      when 0
+        1
+      when 1
+        3
+      else
+        4
+    end
+    @number_of_monitors = case self.grandson.difficulty
+      when 0
+        1
+      when 1
+        2
+      else
+        3
+    end
     monitors = generate_monitors
     towers = generate_towers
     definition = {
-      grandpasHardware: { monitor: rand(3), tower: rand(3) },
+      grandpasHardware: { monitor: rand(@number_of_monitors), tower: rand(@number_of_towers) },
       monitors: monitors,
       towers: towers
     }
@@ -108,9 +121,12 @@ class Game < ApplicationRecord
     @possible_monitor_names = [
       "#{shuffabit.call.first(3).join}-#{rand(500).to_s}#{shuffabit.call.first(2).join}",
       "#{shuffabit.call.first(3).join}#{rand(500).to_s}",
-      "#{shuffabit.call.first(2).join}-#{shuffabit.call.first}#{rand(2000).to_s}"
+      "#{shuffabit.call.first(2).join}-#{shuffabit.call.first}#{rand(2000).to_s}",
+      "#{shuffabit.call.first(1).join}-#{rand(500).to_s}#{shuffabit.call.first(2).join}",
+      "#{shuffabit.call.first(5).join}#{rand(99).to_s}",
+      "#{shuffabit.call.first(2).join}-#{shuffabit.call.first}#{rand(20).to_s}"
     ].shuffle
-    3.times do
+    (@number_of_monitors).times do
       @possible_cable_colors = ['blue', 'green', 'red'].shuffle
       monitors << generate_monitor
     end
@@ -164,7 +180,7 @@ class Game < ApplicationRecord
         "Boxbrand Cheapo v4",
         "Exvadius 1998XT"
     ].shuffle
-    3.times do
+    @number_of_towers.times do
       @possible_cable_colors = ['yellow', 'purple'].shuffle
       monitors << generate_tower
     end

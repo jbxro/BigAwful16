@@ -3,7 +3,7 @@
 # You can use CoffeeScript in this file: http://coffeescript.org/
 
 App.Game = class Game
-  constructor: (@websocket, @userType) ->
+  constructor: (@websocket, @userType, @difficulty) ->
     @wordList = {}
     @messageBlock = []
     @wordListElement = $('#word-list')

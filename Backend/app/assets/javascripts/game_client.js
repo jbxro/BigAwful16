@@ -1,5 +1,6 @@
 GameClient = {
-  start: function(gameType, id, data, target){
+  start: function(gameType, id, data, target, difficulty){
+    data.difficulty = difficulty
     var game = new Phaser.Game(1200, 700, Phaser.CANVAS, document.getElementById(target));
     switch (gameType) {
       case 'Grandpa':

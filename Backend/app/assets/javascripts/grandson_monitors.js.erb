@@ -32,11 +32,18 @@ GameClient.GFG.GrandsonMonitors.prototype = {
     [83, 55]
   ],
 
-  coords: [
-    [95, 106],
-    [462, 106],
-    [830, 106]
-  ],
+  coords: {
+    0: [ [462, 106] ],
+    1: [
+      [205, 106],
+      [722, 106],
+    ],
+    2: [
+      [95, 106],
+      [462, 106],
+      [830, 106],
+    ]
+  },
 
   buttonDescriptions: [
     "DUmMY 1",
@@ -67,7 +74,11 @@ GameClient.GFG.GrandsonMonitors.prototype = {
 
     this.monitors = this.game.add.group();
     for(var i=0;i<this.data.monitors.length;i++){
-      var monitor = new GameClient.SmallMonitor(this, this.game, this.coords[i][0], this.coords[i][1], this.monitors, this.data.monitors[i]);
+      var monitor = new GameClient.SmallMonitor(this,
+        this.game,
+        this.coords[this.data.difficulty][i][0], this.coords[this.data.difficulty][i][1],
+        this.monitors, this.data.monitors[i]
+      );
     }
 
     this.game.world.bringToTop(this.game.labels);

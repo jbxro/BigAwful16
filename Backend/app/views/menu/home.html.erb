@@ -1,8 +1,22 @@
 <div class='join-line'>
-  <a class='join-link' href="/game?as=grandpa">Play as Grandpa</a> - Recommended for First-timers <span>(<span class='grandson-count'><%=@grandson_games.count%></span> grandsons are ready to help.)</span>
+  <div>
+    <h3>Play as Grandpa</h3>
+    <span>(<span class='grandson-count'><%=@grandson_games.count%></span> grandsons are ready to help.)</span>
+  </div>
+  Recommended for First-timers 
+  <br />
+  <a class='join-link' href="/game?as=grandpa&difficulty=2">Easy</a>
 </div>
 <div class='join-line'>
-  <a class='join-link' href="/game?as=grandson">Play as Grandson</a> - The Quality of Grandpa's Experience Depends on You <span>(<span class='grandpa-count'><%=@grandpa_games.count%></span> grandpas need your help.)</span>
+  <div>
+    <h3>Play as Grandson</h3>
+    <span>(<span class='grandpa-count'><%=@grandpa_games.count%></span> grandpas need your help.)</span>
+  </div>
+  The Quality of Grandpa's Experience Depends on You
+  <br />
+  <a class='join-link' href="/game?as=grandson&difficulty=0">Easy</a>
+  <a class='join-link' href="/game?as=grandson&difficulty=1">Medium</a>
+  <a class='join-link' href="/game?as=grandson&difficulty=2">Hard</a>
 </div>
 
 <div>

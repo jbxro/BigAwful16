@@ -69,5 +69,5 @@
 </div>
 
 <%= javascript_tag do %>
-  App.connect_to_game('<%=@user.type%>', <%=@user.id%>)
+  App.connect_to_game('<%=@user.type%>', <%=@user.id%>, <%=@user.difficulty%>)
 <% end %>

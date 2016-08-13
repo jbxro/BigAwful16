@@ -1,9 +1,9 @@
-App.connect_to_game = (user_type, user_id)->
+App.connect_to_game = (user_type, user_id, difficulty)->
   App.cable.subscriptions.create "GameChannel",
     # RESPONSES
     connected: ->
       @perform('register', {type: user_type, id: user_id})
-      @game = new App.Game(@, user_type)
+      @game = new App.Game(@, user_type, difficulty)
 
     received: (data) ->
       @[data.action](data)
@@ -28,7 +28,7 @@ App.connect_to_game = (user_type, user_id)->
       $('.client-placeholder').remove()
       data.message.subscription = @
       if(user_type=='Grandpa')
-        GameClient.start(user_type, 0, data.message, 'main')
+        GameClient.start(user_type, 0, data.message, 'main', difficulty)
       else
-        GameClient.start(user_type, 0, data.message, 'monitor')
-        GameClient.start(user_type, 0, data.message, 'tower')
+        GameClient.start(user_type, 0, data.message, 'monitor', difficulty)
+        GameClient.start(user_type, 0, data.message, 'tower', difficulty)

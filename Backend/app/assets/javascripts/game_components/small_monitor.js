@@ -12,7 +12,7 @@ GameClient.SmallMonitor = function(conflux, game, x, y, group, data) {
   this.titleText.anchor.setTo(0.5);
   this.titleText.fontSize = 25;
   this.titleText.wordWrap = true;
-  this.titleText.wordWrapWidth = 300;
+  this.titleText.wordWrapWidth = 250;
   // draw power cable icon
   this.cable = this.addChild(this.game.make.sprite(30, this.height+25, 'cableIcons'));
   this.cable.anchor.setTo(0);
